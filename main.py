@@ -1,5 +1,33 @@
 from wasmer import wat2wasm
+from rply import LexerGenerator
+from parse_def import parser
 
+
+lg = LexerGenerator()
+
+lg.add("IMPORT", "import")
+lg.add("AS", "as")
+lg.add("LAMBDA", "lambda")
+lg.add("LPAR", r"\(")
+lg.add("RPAR", r"\)")
+lg.add("COLON", r"\:")
+lg.add("DOT", r"\.")
+lg.add("RIGHT_ARROW", "->")
+lg.add("IDENTIFIER", r"[a-z-A-Z0-9_]\w*")
+lg.ignore(r"\s+")
+
+
+# load the contents of the source file
+with open("./lang/purple.ptr", "r") as f:
+    src = f.read()
+
+lexer = lg.build()
+# for tok in lexer.lex(src):
+#     print(tok)
+
+wat_text = parser.parse(lexer.lex(src)).eval()
+print("The wat output text")
+print(wat_text)
 
 module = """(module
     (import "env" "log" (func $log (param i32)))
