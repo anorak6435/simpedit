@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleEdit</title>
+</head>
+<body>
+    <canvas id="screen" width="680" height="420" style="border:1px solid #000000;"></canvas>
+
+    <script>
+        const screen = document.querySelector("#screen");
+        var ctx = screen.getContext("2d");
+        var instance;
+        
+        function refresh_screen() {
+            // console.log("canvas image data!")
+            // let img_data = ctx.getImageData(0, 0, screen.width, screen.height, {"colorSpace" : "srgb"});
+            // console.log(img_data);
+            let wasmem = new ImageData(new Uint8ClampedArray(instance.exports.mem.buffer).slice(0, 1142400), 680, 420, {"colorSpace": "srgb"});
+            console.log(wasmem);
+            ctx.putImageData(wasmem, 0, 0)
+        }
+        
+
+        (async () => {
+            const response = await fetch('main.wasm');
+            const buffer = await response.arrayBuffer();
+            const module = await WebAssembly.compile(buffer);
+            const import_obj = {
+                "env" : {
+                    "log" : console.log,
+                    "refresh_screen" : refresh_screen
+                }
+            }
+            instance = await WebAssembly.instantiate(module, import_obj);
+            // memory_data = new Uint8ClampedArray(instance.exports.mem.buffer);
+            instance.exports.main();
+            // console.log("Memory data!")
+            // console.log(new Uint8ClampedArray(instance.exports.mem.buffer));
+            
+            const result = instance.exports.add(36, 33);
+            console.log(result);
+        })();
+    </script>
+</body>
+</html>
