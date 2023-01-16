@@ -1,2 +1,3 @@
 import env.log as lambda log (i32)
 import env.refresh_screen as lambda refresh_screen ()
+export memory mem 18 as mem

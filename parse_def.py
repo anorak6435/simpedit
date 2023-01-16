@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "AS", "LAMBDA", "RPAR", "LPAR", "COLON", "DOT", "IDENTIFIER", "RIGHT_ARROW"])
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "RPAR", "LPAR", "MEMORY", "DOT", "INT", "IDENTIFIER", "RIGHT_ARROW"])
 
 @pg.production("statements : statements stmt")
 def statements(p):
@@ -16,6 +16,14 @@ def stmt_import_and_return(p):
     # print("What the parser returned")
     # print(p)
     return ImportStmt(p[1], p[3])
+
+@pg.production("stmt : EXPORT stmt AS IDENTIFIER")
+def stmt_export_stmt(p):
+    return ExportStmt(p[1], p[3].getstr())
+
+@pg.production("stmt : MEMORY IDENTIFIER INT")
+def stmt_memory(p):
+    return MemoryStmt(p[1].getstr(), p[2].getstr())
 
 
 @pg.production("lambda : LAMBDA IDENTIFIER parameters RIGHT_ARROW IDENTIFIER")

@@ -43,8 +43,28 @@ class ImportStmt(BaseBox):
         self.outside_obj_ref = outside_obj_ref
         self.inner_ref = inner_ref
 
-    def eval(self) -> str:
+    def eval(self, export="") -> str:
+        assert export == "", "Please don't give import statements something to export"
         return "(import " + " ".join(list(map(add_quotes, self.outside_obj_ref))) + " " + self.inner_ref.eval() + ")"
+
+class ExportStmt(BaseBox):
+    def __init__(self, stmt, name) -> None:
+        self.stmt_to_export = stmt
+        self.export_name = name
+
+    # make sure that it's eval calls the eval of the inner statement to export
+    # and gives the export name string to be inserted
+    def eval(self) -> str:
+        export_tag = " (export " + add_quotes(self.export_name) + ")"
+        return self.stmt_to_export.eval(export=export_tag)
+
+class MemoryStmt(BaseBox):
+    def __init__(self, name, size) -> None:
+        self.name = name
+        self.size = size
+
+    def eval(self, export="") -> str:
+        return f"(memory ${self.name}{export} {self.size})"
 
 class BinaryOp(BaseBox):
     def __init__(self, left, right):

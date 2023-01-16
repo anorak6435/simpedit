@@ -6,13 +6,16 @@ from parse_def import parser
 lg = LexerGenerator()
 
 lg.add("IMPORT", "import")
+lg.add("EXPORT", "export")
 lg.add("AS", "as")
 lg.add("LAMBDA", "lambda")
+lg.add("MEMORY", "memory")
 lg.add("LPAR", r"\(")
 lg.add("RPAR", r"\)")
 lg.add("COLON", r"\:")
 lg.add("DOT", r"\.")
 lg.add("RIGHT_ARROW", "->")
+lg.add("INT", r"\d+")
 lg.add("IDENTIFIER", r"[a-z-A-Z0-9_]\w*")
 lg.ignore(r"\s+")
 
