@@ -25,7 +25,7 @@ def NAME ( param : [i32 | i64] * ) -> [i32 | i64] {
 # TODO
 - [x] The nameplus to change it into typelist and make parameters free for the function statement
 - [x] Build a wat version of the add function
-- [ ] add more binary operations (with precedence)
+- [x] add more binary operations (with precedence)
 - [ ] build a definition for a local variable
 - [ ] build a definition for memory manipulation
 - [ ] build a function call definition

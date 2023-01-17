@@ -114,21 +114,32 @@ class BinaryOp(BaseBox):
         self.op = op
         self.right = right
 
-    def value_tag(self, value : Token) -> str:
-        match value.gettokentype():
-            case "IDENTIFIER":
-                return f"(local.get ${value.getstr()})"
-            case _:
-                raise Exception(f"No watcode found for binaryop value: {value.gettokentype()}")
+    def value_tag(self, value) -> str: # value = [Token | 'BinaryOp']
+        if isinstance(value, Token):
+            match value.gettokentype():
+                case "IDENTIFIER":
+                    return f"(local.get ${value.getstr()})"
+                case "INT":
+                    return f"(i32.const {value.getstr()})"
+                case _:
+                    raise Exception(f"No watcode found for binaryop value: {value.gettokentype()}")
+        else:
+            return value.eval()
 
     def eval(self) -> str:
-        assert isinstance(self.left, Token), "The left is not a token"
-        print(dir(self.left))
+        # assert isinstance(self.left, Token), f"The left is not a token: {self.left}"
+        # print(dir(self.left))
         return_str = ""
 
         match self.op.getstr():
             case "+":
                 return_str += f"(i32.add {self.value_tag(self.left)} {self.value_tag(self.right)})"
+            case "-":
+                return_str += f"(i32.sub {self.value_tag(self.left)} {self.value_tag(self.right)})"
+            case "*":
+                return_str += f"(i32.mul {self.value_tag(self.left)} {self.value_tag(self.right)})"
+            case "/":
+                return_str += f"(i32.div {self.value_tag(self.left)} {self.value_tag(self.right)})"
             case _:
                 raise Exception(f"No watcode found for operation: {self.op.getstr()}")
 

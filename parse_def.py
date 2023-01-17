@@ -1,7 +1,13 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "RPAR", "LPAR", "LBRACE", "RBRACE", "MEMORY", "DOT", "COMMA", "PLUS", "INT", "IDENTIFIER", "COLON", "RIGHT_ARROW"])
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "RPAR", "LPAR", "LBRACE", "RBRACE", "MEMORY", "DOT", "COMMA", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "RIGHT_ARROW"],
+    # the lower in list. The higher precedence
+    precedence=[
+        ('left', ['PLUS', 'MINUS']),
+        ('left', ['MUL', 'DIV'])
+    ]
+)
 
 @pg.production("modules : modules module")
 def statements(p):
@@ -37,8 +43,16 @@ def empty_func_body(p):
 def expression_block(p):
     return Block([p[1]])
 
+@pg.production("expression : IDENTIFIER")
+@pg.production("expression : INT")
+def expression_value(p):
+    return p[0]
+
 # @pg.production("expression : INT PLUS INT")
-@pg.production("expression : IDENTIFIER PLUS IDENTIFIER")
+@pg.production("expression : expression PLUS expression")
+@pg.production("expression : expression MINUS expression")
+@pg.production("expression : expression MUL expression")
+@pg.production("expression : expression DIV expression")
 def plus_expression(p):
     return BinaryOp(p[0], p[1], p[2])
 

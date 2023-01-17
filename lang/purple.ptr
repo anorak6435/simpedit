@@ -4,3 +4,7 @@ export memory mem 18 as mem
 def add (x : i32, y : i32) -> i32 {
     x + y
 }
+
+def formula(x : i32, y : i32, z : i32) -> i32 {
+    x + y * z - 4 / 2
+}
