@@ -5,6 +5,7 @@ def add (x : i32, y : i32) -> i32 {
     x + y
 }
 
+# made a formula to check if math precedence was handled
 def formula(x : i32, y : i32, z : i32) -> i32 {
     x + y * z - 4 / 2
 }
@@ -19,5 +20,5 @@ def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
 
 def main() -> i32 {
     add(410, 10);
-    log();
+    # log();
 }

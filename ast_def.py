@@ -1,13 +1,12 @@
 # define the ast for the language
 from rply.token import BaseBox, Token
 
-# class Number(BaseBox):
-#     def __init__(self, value) -> None:
-#         self.value = value
+class Comment(BaseBox):
+    def __init__(self, comment_string):
+        self.comment_string = comment_string
 
-#     def eval(self) -> str:
-#         "returns the wat code for the code"
-#         return f"(i32.const {self.value})"
+    def eval(self):
+        return ";;" + self.comment_string[1:] # removing the # from the comment
 
 class LambdaMdl(BaseBox):
     def __init__(self, name, params : list[str], return_type : str = None):
@@ -131,7 +130,7 @@ class FuncMdl(BaseBox):
             let_stmts = list(filter(is_let_stmt, self.body.statements[0].statements))
             locals_str = "".join(list(map(lambda val: f" (local ${val.name} i32)", let_stmts)))
         print(locals_str, type(locals_str))
-        func_tag = f"(func ${self.name}{export}" + self.params.eval() + self.result_tag() + f"{locals_str}\n" + self.bodystmts() + ")"
+        func_tag = f"(func ${self.name}{export}" + self.params.eval() + self.result_tag() + f"{locals_str}\n" + self.bodystmts() + "\n)"
         return func_tag
 
 class LetStmt(BaseBox):

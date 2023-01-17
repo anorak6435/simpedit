@@ -44,5 +44,8 @@ NAME \( args * \);
     - [x] FIX use the mem keyword when referring to memory
 - [x] FIX can handle function definitions without arguments
 - [x] build a function call definition
-- [ ] build comment definition
+- [x] build comment definition
+    - [x] inside functions comments
+    - [x] outside function comments
+    - [x] FIX made me realise that the function closing paren has te be on it's own line otherwise it will be commented out.
 - [ ] build a for loop definition

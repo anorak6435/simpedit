@@ -31,6 +31,7 @@ lg.add("MUL", r"\*")
 lg.add("DIV", r"/")
 lg.add("INT", r"\d+")
 lg.add("IDENTIFIER", r"[a-z-A-Z0-9_]\w*")
+lg.add("COMMENT", r"#.*")
 lg.ignore(r"\s+")
 
 

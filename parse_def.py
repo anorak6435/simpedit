@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW"],
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"],
     # the lower in list. The higher precedence
     precedence=[
         ('left', ['PLUS', 'MINUS']),
@@ -16,6 +16,10 @@ def statements(p):
 @pg.production("modules : module")
 def statements(p):
     return Block([p[0]])
+
+@pg.production("module : comment")
+def comment_mdl(p):
+    return p[0]
 
 @pg.production("module : IMPORT importname AS lambda")
 def mdl_import_and_return(p):
@@ -58,8 +62,13 @@ def single_statement_inner_func(p):
 @pg.production("stmt : vardeclar")
 @pg.production("stmt : memstore")
 @pg.production("stmt : expression")
+@pg.production("stmt : comment")
 def innerfunc_values(p):
     return p[0]
+
+@pg.production("comment : COMMENT")
+def commentary(p):
+    return Comment(p[0].getstr())
 
 @pg.production("vardeclar : LET IDENTIFIER EQUALS expression SEMICOLON")
 def let_expression_block(p):
