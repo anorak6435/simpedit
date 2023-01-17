@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "RPAR", "LPAR", "LBRACE", "RBRACE", "MEMORY", "DOT", "COMMA", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "RIGHT_ARROW"],
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "RPAR", "LPAR", "LBRACE", "RBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW"],
     # the lower in list. The higher precedence
     precedence=[
         ('left', ['PLUS', 'MINUS']),
@@ -39,16 +39,36 @@ def mdl_func_def(p):
 def empty_func_body(p):
     return Block([])
 
-@pg.production("body : LBRACE expression RBRACE")
+@pg.production("body : LBRACE innerfunc RBRACE")
 def expression_block(p):
     return Block([p[1]])
+
+@pg.production("innerfunc : innerfunc stmt")
+def statements(p):
+    return Block(p[0].getastlist() + [p[1]])
+
+@pg.production("innerfunc : stmt")
+def single_statement_inner_func(p):
+    return Block([p[0]])
+
+@pg.production("stmt : vardeclar")
+@pg.production("stmt : expression")
+def innerfunc_values(p):
+    return p[0]
+
+@pg.production("vardeclar : LET IDENTIFIER EQUALS expression SEMICOLON")
+def expression_block(p):
+    return LetStmt(p[1].getstr(), p[3])
 
 @pg.production("expression : IDENTIFIER")
 @pg.production("expression : INT")
 def expression_value(p):
     return p[0]
 
-# @pg.production("expression : INT PLUS INT")
+@pg.production("expression : LPAR expression RPAR")
+def parentesised_expr(p):
+    return p[1]
+
 @pg.production("expression : expression PLUS expression")
 @pg.production("expression : expression MINUS expression")
 @pg.production("expression : expression MUL expression")

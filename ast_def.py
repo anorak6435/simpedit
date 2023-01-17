@@ -79,6 +79,14 @@ class ExportMdl(BaseBox):
         export_tag = " (export " + add_quotes(self.export_name) + ")"
         return self.stmt_to_export.eval(export=export_tag)
 
+class MemoryMdl(BaseBox):
+    def __init__(self, name, size) -> None:
+        self.name = name
+        self.size = size
+
+    def eval(self, export="") -> str:
+        return f"(memory ${self.name}{export} {self.size})"
+
 class FuncMdl(BaseBox):
     def __init__(self, name, params, result, body) -> None:
         self.name = name
@@ -97,16 +105,19 @@ class FuncMdl(BaseBox):
 
     def eval(self, export="") -> str:
         # print("params : ", self.params)
-        func_tag = f"(func ${self.name}{export}" + self.params.eval() + self.result_tag() + "\n" + self.bodystmts() + ")"
+        let_stmts = list(filter(is_let_stmt, self.body.statements[0].statements))
+        locals_str = "".join(list(map(lambda val: f" (local ${val.name} i32)", let_stmts)))
+        print(locals_str, type(locals_str))
+        func_tag = f"(func ${self.name}{export}" + self.params.eval() + self.result_tag() + f"{locals_str}\n" + self.bodystmts() + ")"
         return func_tag
 
-class MemoryMdl(BaseBox):
-    def __init__(self, name, size) -> None:
+class LetStmt(BaseBox):
+    def __init__(self, name, val_expr) -> None:
         self.name = name
-        self.size = size
+        self.val_expr = val_expr
 
-    def eval(self, export="") -> str:
-        return f"(memory ${self.name}{export} {self.size})"
+    def eval(self) -> str:
+        return f"(local.set ${self.name}\n{self.val_expr.eval()}\n)"
 
 class BinaryOp(BaseBox):
     def __init__(self, left, op, right):
@@ -144,3 +155,6 @@ class BinaryOp(BaseBox):
                 raise Exception(f"No watcode found for operation: {self.op.getstr()}")
 
         return return_str
+
+def is_let_stmt(val):
+    return isinstance(val, LetStmt)

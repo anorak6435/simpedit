@@ -8,3 +8,7 @@ def add (x : i32, y : i32) -> i32 {
 def formula(x : i32, y : i32, z : i32) -> i32 {
     x + y * z - 4 / 2
 }
+
+def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
+    let pxl_start = (y * 680 + x) * 4;
+}
