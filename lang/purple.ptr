@@ -11,4 +11,8 @@ def formula(x : i32, y : i32, z : i32) -> i32 {
 
 def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
     let pxl_start = (y * 680 + x) * 4;
+    mem[pxl_start] = r;
+    mem[pxl_start+1] = g;
+    mem[pxl_start+2] = b;
+    mem[pxl_start+3] = a;
 }

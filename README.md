@@ -25,6 +25,13 @@ def NAME ( param : [i32 | i64] * ) -> [i32 | i64] {
 ## local variable definition
 let NAME = expression;
 
+## memory manipulation (store8) *for know we let the default store operation be 8 bits*
+mem\[address\] = expression;
+set a memory value at address to value value
+mem is the name given in the memory definition
+address is an expression that results into an integer
+expression results into the integer value to be stored at that memory location
+
 # TODO
 - [x] The nameplus to change it into typelist and make parameters free for the function statement
 - [x] Build a wat version of the add function

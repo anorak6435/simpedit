@@ -119,42 +119,48 @@ class LetStmt(BaseBox):
     def eval(self) -> str:
         return f"(local.set ${self.name}\n{self.val_expr.eval()}\n)"
 
+class Memory_Store(BaseBox):
+    def __init__(self, memref, address, val_expr) -> None:
+        self.memref = memref
+        self.address = address
+        self.val_expr = val_expr
+
+    def eval(self) -> str:
+        return f"{self.address.eval()}\n{self.val_expr.eval()}\n(i32.store8)"
+
+class Value(BaseBox):
+    def __init__(self, val):
+        self.value = val
+
+    def eval(self) -> str:
+        match self.value.gettokentype():
+            case "IDENTIFIER":
+                return f"(local.get ${self.value.getstr()})"
+            case "INT":
+                return f"(i32.const {self.value.getstr()})"
+            case _:
+                raise Exception(f"No watcode found for value: {self.value.gettokentype()}")
+
 class BinaryOp(BaseBox):
     def __init__(self, left, op, right):
         self.left = left
         self.op = op
         self.right = right
 
-    def value_tag(self, value) -> str: # value = [Token | 'BinaryOp']
-        if isinstance(value, Token):
-            match value.gettokentype():
-                case "IDENTIFIER":
-                    return f"(local.get ${value.getstr()})"
-                case "INT":
-                    return f"(i32.const {value.getstr()})"
-                case _:
-                    raise Exception(f"No watcode found for binaryop value: {value.gettokentype()}")
-        else:
-            return value.eval()
-
     def eval(self) -> str:
-        # assert isinstance(self.left, Token), f"The left is not a token: {self.left}"
-        # print(dir(self.left))
-        return_str = ""
-
         match self.op.getstr():
             case "+":
-                return_str += f"(i32.add {self.value_tag(self.left)} {self.value_tag(self.right)})"
+                op = "add"
             case "-":
-                return_str += f"(i32.sub {self.value_tag(self.left)} {self.value_tag(self.right)})"
+                op = "sub"
             case "*":
-                return_str += f"(i32.mul {self.value_tag(self.left)} {self.value_tag(self.right)})"
+                op = "mul"
             case "/":
-                return_str += f"(i32.div {self.value_tag(self.left)} {self.value_tag(self.right)})"
+                op = "div"
             case _:
                 raise Exception(f"No watcode found for operation: {self.op.getstr()}")
 
-        return return_str
+        return f"(i32.{op} {self.left.eval()} {self.right.eval()})"
 
 def is_let_stmt(val):
     return isinstance(val, LetStmt)
