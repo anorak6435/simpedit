@@ -10,10 +10,15 @@ lg.add("EXPORT", "export")
 lg.add("AS", "as")
 lg.add("LAMBDA", "lambda")
 lg.add("MEMORY", "memory")
+lg.add("DEF", "def")
 lg.add("LPAR", r"\(")
 lg.add("RPAR", r"\)")
+lg.add("LBRACE", r"\{")
+lg.add("RBRACE", r"\}")
 lg.add("COLON", r"\:")
 lg.add("DOT", r"\.")
+lg.add("COMMA", r"\,")
+lg.add("PLUS", r"\+")
 lg.add("RIGHT_ARROW", "->")
 lg.add("INT", r"\d+")
 lg.add("IDENTIFIER", r"[a-z-A-Z0-9_]\w*")
@@ -25,8 +30,8 @@ with open("./lang/purple.ptr", "r") as f:
     src = f.read()
 
 lexer = lg.build()
-# for tok in lexer.lex(src):
-#     print(tok)
+for tok in lexer.lex(src):
+    print(tok)
 
 wat_text = parser.parse(lexer.lex(src)).eval()
 print("The wat output text")

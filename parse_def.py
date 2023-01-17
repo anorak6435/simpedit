@@ -1,48 +1,76 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "RPAR", "LPAR", "MEMORY", "DOT", "INT", "IDENTIFIER", "RIGHT_ARROW"])
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "RPAR", "LPAR", "LBRACE", "RBRACE", "MEMORY", "DOT", "COMMA", "PLUS", "INT", "IDENTIFIER", "COLON", "RIGHT_ARROW"])
 
-@pg.production("statements : statements stmt")
+@pg.production("modules : modules module")
 def statements(p):
     return Block(p[0].getastlist() + [p[1]])
 
-@pg.production("statements : stmt")
+@pg.production("modules : module")
 def statements(p):
     return Block([p[0]])
 
-@pg.production("stmt : IMPORT importname AS lambda")
-def stmt_import_and_return(p):
+@pg.production("module : IMPORT importname AS lambda")
+def mdl_import_and_return(p):
     # print("What the parser returned")
     # print(p)
-    return ImportStmt(p[1], p[3])
+    return ImportMdl(p[1], p[3])
 
-@pg.production("stmt : EXPORT stmt AS IDENTIFIER")
-def stmt_export_stmt(p):
-    return ExportStmt(p[1], p[3].getstr())
+@pg.production("module : EXPORT module AS IDENTIFIER")
+def mdl_export_stmt(p):
+    return ExportMdl(p[1], p[3].getstr())
 
-@pg.production("stmt : MEMORY IDENTIFIER INT")
-def stmt_memory(p):
-    return MemoryStmt(p[1].getstr(), p[2].getstr())
+@pg.production("module : MEMORY IDENTIFIER INT")
+def mdl_memory(p):
+    return MemoryMdl(p[1].getstr(), p[2].getstr())
 
+@pg.production("module : DEF IDENTIFIER LPAR parameters RPAR RIGHT_ARROW IDENTIFIER body")
+def mdl_func_def(p):
+    return FuncMdl(p[1].getstr(), p[3], p[6].getstr(), p[7])
 
-@pg.production("lambda : LAMBDA IDENTIFIER parameters RIGHT_ARROW IDENTIFIER")
-def stmt_lambda_with_return(p):
+@pg.production("body : LBRACE RBRACE")
+def empty_func_body(p):
+    return Block([])
+
+@pg.production("body : LBRACE expression RBRACE")
+def expression_block(p):
+    return Block([p[1]])
+
+# @pg.production("expression : INT PLUS INT")
+@pg.production("expression : IDENTIFIER PLUS IDENTIFIER")
+def plus_expression(p):
+    return BinaryOp(p[0], p[1], p[2])
+
+@pg.production("parameters : parameters COMMA param")
+def mdl_func_param(p):
+    return Parameters(p[0].getastlist() + [p[2]])
+
+@pg.production("parameters : param")
+def mdl_func_single_param(p):
+    return Parameters([p[0]])
+
+@pg.production("param : IDENTIFIER COLON IDENTIFIER")
+def param_name_type(p):
+    return Param(p[0].getstr(), p[2].getstr())
+
+@pg.production("lambda : LAMBDA IDENTIFIER typelist RIGHT_ARROW IDENTIFIER")
+def mdl_lambda_with_return(p):
     # print("The lambda with return")
-    return LambdaStmt(p[1].getstr(), p[2], p[4].getstr())
+    return LambdaMdl(p[1].getstr(), p[2], p[4].getstr())
 
-@pg.production("lambda : LAMBDA IDENTIFIER parameters")
-def stmt_lambda(p):
+@pg.production("lambda : LAMBDA IDENTIFIER typelist")
+def mdl_lambda(p):
     # print("The lambda")
-    return LambdaStmt(p[1].getstr(), p[2])
+    return LambdaMdl(p[1].getstr(), p[2])
 
-@pg.production("parameters : LPAR nameplus RPAR")
-def oneplus_parameters(p):
+@pg.production("typelist : LPAR nameplus RPAR")
+def oneplus_typelist(p):
     return p[1]
 
 
-@pg.production("parameters : LPAR RPAR")
-def no_parameters(_):
+@pg.production("typelist : LPAR RPAR")
+def no_typelist(_):
     return []
 
 
