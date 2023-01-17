@@ -35,6 +35,10 @@ def mdl_memory(p):
 def mdl_func_def(p):
     return FuncMdl(p[1].getstr(), p[3], p[6].getstr(), p[7])
 
+@pg.production("module : DEF IDENTIFIER LPAR RPAR RIGHT_ARROW IDENTIFIER body")
+def mdl_func_def_no_params(p):
+    return FuncMdl(p[1].getstr(), Arguments([]), p[5].getstr(), p[6])
+
 @pg.production("body : LBRACE RBRACE")
 def empty_func_body(p):
     return Block([])
@@ -70,6 +74,26 @@ def mem_expression_block(p):
 @pg.production("expression : INT")
 def expression_value(p):
     return Value(p[0])
+
+@pg.production("expression : IDENTIFIER LPAR arguments RPAR SEMICOLON")
+def function_call(p):
+    return FunctionCall(p[0].getstr(), p[2])
+
+@pg.production("expression : IDENTIFIER LPAR RPAR SEMICOLON")
+def function_call_no_arguments(p):
+    return FunctionCall(p[0].getstr(), Arguments([]))
+
+@pg.production("arguments : arguments COMMA arg")
+def arguments(p):
+    return Arguments(p[0].getastlist() + [Arg(p[2])])
+
+@pg.production("arguments : arg")
+def arguments_one(p):
+    return Arguments([Arg(p[0])])
+
+@pg.production("arg : expression")
+def arg(p):
+    return p[0]
 
 @pg.production("expression : LPAR expression RPAR")
 def parentesised_expr(p):

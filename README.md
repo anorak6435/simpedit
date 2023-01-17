@@ -32,11 +32,15 @@ mem is the name given in the memory definition
 address is an expression that results into an integer
 expression results into the integer value to be stored at that memory location
 
+## call function
+NAME \( args * \);
+
 # TODO
 - [x] The nameplus to change it into typelist and make parameters free for the function statement
 - [x] Build a wat version of the add function
 - [x] add more binary operations (with precedence)
 - [x] build a definition for a local variable
-- [ ] build a definition for memory manipulation
-- [ ] build a function call definition
+- [x] BUGGED build a definition for memory manipulation
+- [x] FIX can handle function definitions without arguments
+- [x] build a function call definition
 - [ ] build a for loop definition

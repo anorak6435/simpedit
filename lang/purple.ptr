@@ -16,3 +16,8 @@ def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
     mem[pxl_start+2] = b;
     mem[pxl_start+3] = a;
 }
+
+def main() -> i32 {
+    add(410, 10);
+    log();
+}

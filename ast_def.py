@@ -1,13 +1,13 @@
 # define the ast for the language
 from rply.token import BaseBox, Token
 
-class Number(BaseBox):
-    def __init__(self, value) -> None:
-        self.value = value
+# class Number(BaseBox):
+#     def __init__(self, value) -> None:
+#         self.value = value
 
-    def eval(self) -> str:
-        "returns the wat code for the code"
-        return f"(i32.const {self.value})"
+#     def eval(self) -> str:
+#         "returns the wat code for the code"
+#         return f"(i32.const {self.value})"
 
 class LambdaMdl(BaseBox):
     def __init__(self, name, params : list[str], return_type : str = None):
@@ -55,6 +55,27 @@ class Param(BaseBox):
 
     def eval(self) -> str:
         return f" (param ${self.name} {self.type})"
+
+class Arguments(BaseBox):
+    def __init__(self, argument_lst) -> None:
+        self.arg_lst = argument_lst
+
+    def getastlist(self):
+        return self.arg_lst
+
+    def eval(self) -> str:
+        # print(self.arg_lst)
+        return "".join([arg.eval() for arg in self.arg_lst])
+
+class Arg(BaseBox):
+    def __init__(self, expr_val) -> None:
+        self.expr_val = expr_val
+
+    def eval(self) -> str:
+        # print(self.expr_val)
+        return " " + self.expr_val.eval()
+
+
 
 def add_quotes(val):
     return '\"' + val + '\"'
@@ -105,8 +126,10 @@ class FuncMdl(BaseBox):
 
     def eval(self, export="") -> str:
         # print("params : ", self.params)
-        let_stmts = list(filter(is_let_stmt, self.body.statements[0].statements))
-        locals_str = "".join(list(map(lambda val: f" (local ${val.name} i32)", let_stmts)))
+        locals_str = "" #default the value to nothing
+        if len(self.body.statements) > 0:
+            let_stmts = list(filter(is_let_stmt, self.body.statements[0].statements))
+            locals_str = "".join(list(map(lambda val: f" (local ${val.name} i32)", let_stmts)))
         print(locals_str, type(locals_str))
         func_tag = f"(func ${self.name}{export}" + self.params.eval() + self.result_tag() + f"{locals_str}\n" + self.bodystmts() + ")"
         return func_tag
@@ -127,6 +150,14 @@ class Memory_Store(BaseBox):
 
     def eval(self) -> str:
         return f"{self.address.eval()}\n{self.val_expr.eval()}\n(i32.store8)"
+
+class FunctionCall(BaseBox):
+    def __init__(self, func_name, arguments) -> None:
+        self.func_name = func_name
+        self.args = arguments
+
+    def eval(self) -> str:
+        return f"(call ${self.func_name}{self.args.eval()})"
 
 class Value(BaseBox):
     def __init__(self, val):
