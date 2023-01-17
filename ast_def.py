@@ -143,8 +143,7 @@ class LetStmt(BaseBox):
         return f"(local.set ${self.name}\n{self.val_expr.eval()}\n)"
 
 class Memory_Store(BaseBox):
-    def __init__(self, memref, address, val_expr) -> None:
-        self.memref = memref
+    def __init__(self, address, val_expr) -> None:
         self.address = address
         self.val_expr = val_expr
 

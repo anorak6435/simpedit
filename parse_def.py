@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW"],
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW"],
     # the lower in list. The higher precedence
     precedence=[
         ('left', ['PLUS', 'MINUS']),
@@ -65,10 +65,9 @@ def innerfunc_values(p):
 def let_expression_block(p):
     return LetStmt(p[1].getstr(), p[3])
 
-@pg.production("memstore : IDENTIFIER LSQRBRACE expression RSQRBRACE EQUALS expression SEMICOLON")
+@pg.production("memstore : MEM LSQRBRACE expression RSQRBRACE EQUALS expression SEMICOLON")
 def mem_expression_block(p):
-    # TODO change how values like IDENTIFIER AND INT are handled in BINOPS. Give them their own Value class and bin op will call that value
-    return Memory_Store((p[0].getstr()), p[2], p[5])
+    return Memory_Store(p[2], p[5])
 
 @pg.production("expression : IDENTIFIER")
 @pg.production("expression : INT")

@@ -27,8 +27,8 @@ let NAME = expression;
 
 ## memory manipulation (store8) *for know we let the default store operation be 8 bits*
 mem\[address\] = expression;
-set a memory value at address to value value
-mem is the name given in the memory definition
+set a memory value at address to expression value
+mem is the command keyword
 address is an expression that results into an integer
 expression results into the integer value to be stored at that memory location
 
@@ -41,6 +41,8 @@ NAME \( args * \);
 - [x] add more binary operations (with precedence)
 - [x] build a definition for a local variable
 - [x] BUGGED build a definition for memory manipulation
+    - [x] FIX use the mem keyword when referring to memory
 - [x] FIX can handle function definitions without arguments
 - [x] build a function call definition
+- [ ] build comment definition
 - [ ] build a for loop definition

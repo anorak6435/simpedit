@@ -18,7 +18,7 @@
             // console.log("canvas image data!")
             // let img_data = ctx.getImageData(0, 0, screen.width, screen.height, {"colorSpace" : "srgb"});
             // console.log(img_data);
-            let wasmem = new ImageData(new Uint8ClampedArray(instance.exports.mem.buffer).slice(0, 1142400), 680, 420, {"colorSpace": "srgb"});
+            let wasmem = new ImageData(new Uint8ClampedArray(instance.exports.wasmem.buffer).slice(0, 1142400), 680, 420, {"colorSpace": "srgb"});
             console.log(wasmem);
             ctx.putImageData(wasmem, 0, 0)
         }
