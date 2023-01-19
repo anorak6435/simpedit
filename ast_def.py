@@ -194,6 +194,11 @@ def iter_body_stmts_for_let_stmts(body_stmts):
             stmts.append(val.init_loop_var) # get it's init value
             stmts.extend(iter_body_stmts_for_let_stmts(val.body.statements[0].statements)) # get possible let statements from the loop body
             # assert False, (dir(val.body.statements[0]), val.body.statements[0].statements)
+        elif isinstance(val, IfStmt):
+            print(dir(val))
+            stmts.extend(iter_body_stmts_for_let_stmts(val.true_block.statements[0].statements)) # there is always a true statements
+            if len(val.false_block.statements) > 0:
+                stmts.extend(iter_body_stmts_for_let_stmts(val.false_block.statements[0].statements))
     return stmts
 
 class LetStmt(BaseBox):
@@ -211,6 +216,13 @@ class Memory_Store(BaseBox):
 
     def eval(self) -> str:
         return f"{self.address.eval()}\n{self.val_expr.eval()}\n(i32.store8)"
+
+class Memory_Load(BaseBox):
+    def __init__(self, address) -> None:
+        self.address = address
+    
+    def eval(self) -> str:
+        return f"{self.address.eval()}\n(i32.load8_u)"
 
 class FunctionCall(BaseBox):
     def __init__(self, func_name, arguments) -> None:
@@ -261,6 +273,8 @@ class BinaryOp(BaseBox):
                 op = "lt_u"
             case ">":
                 op = "gt_u"
+            case "&&":
+                op = "and"
             case _:
                 raise Exception(f"No watcode found for operation: {self.op.getstr()}")
 

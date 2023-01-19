@@ -12,19 +12,82 @@ def formula(x : i32, y : i32, z : i32) -> i32 {
 
 def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
     let pxl_start = (y * 680 + x) * 4;
-    mem[pxl_start] = r;
-    mem[pxl_start+1] = g;
-    mem[pxl_start+2] = b;
-    mem[pxl_start+3] = a;
+    store8[pxl_start] = r;
+    store8[pxl_start+1] = g;
+    store8[pxl_start+2] = b;
+    store8[pxl_start+3] = a;
+}
+
+def print_char_scanline(bitmap : i32, line : i32) -> void {
+    if (bitmap && 128 > 0) {
+        setpixel(0, line, 0, 0, 0, 255);
+    }
+    if (bitmap && 64 > 0) {
+        setpixel(1, line, 0, 0, 0, 255);
+    }
+    if (bitmap && 32 > 0) {
+        setpixel(2, line, 0, 0, 0, 255);
+    }
+    if (bitmap && 16 > 0) {
+        setpixel(3, line, 0, 0, 0, 255);
+    }
+    if (bitmap && 8 > 0) {
+        setpixel(4, line, 0, 0, 0, 255);
+    }
+    if (bitmap && 4 > 0) {
+        setpixel(5, line, 0, 0, 0, 255);
+    }
+    if (bitmap && 2 > 0) {
+        setpixel(6, line, 0, 0, 0, 255);
+    }
+    if (bitmap && 1 > 0) {
+        setpixel(7, line, 0, 0, 0, 255);
+    }
 }
 
 def char_cli(char : i32) -> void {
+    # writes a character to the screen
     if (char == 65) {
+        # found the A character.
+        let screen_end = 680 * 420 * 4;
+        let char_start = screen_end + (char-32)*(8*11);
+        for scanline in range(0, 11) {
+            let char_line = char_start + scanline;
+            log(char_line); 
+            print_char_scanline(load8[char_line], scanline);
+        }
         log(1111);
     } else {
         log(6666);
     }
 }
+
+def load_font() -> void {
+    # store the bitmap of the font
+    # 'A' CHARACTER 65 ascii code
+    let screen_end = 680 * 420 * 4;
+    let a_start = screen_end + (65-32)*(8*11);
+    log(437);
+    log(a_start);
+    store8[a_start] = 48;
+    store8[a_start+1] = 120;
+    store8[a_start+2] = 220;
+    store8[a_start+3] = 204;
+    store8[a_start+4] = 252;
+    store8[a_start+5] = 252;
+    store8[a_start+6] = 204;
+    store8[a_start+7] = 204;
+    store8[a_start+8] = 204;
+    store8[a_start+9] = 0;
+    store8[a_start+10] = 0;
+    # END of 'A' Character
+}
+
+def font_program() -> void {
+    load_font();
+    char_cli(65);
+}
+
 
 def condition_check() -> void {
     let test = 1;
@@ -85,6 +148,16 @@ def condition_check() -> void {
     } else {
         log(1111);
     }
+    if (test && 1) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (1 && test) {
+        log(1111);
+    } else {
+        log(6666);
+    }
 }
 
 export def main() -> i32 {
@@ -99,7 +172,7 @@ export def main() -> i32 {
             setpixel(xi, yi, 165, 55, 253, 255); # purple pixels
         }
     }
-    refresh_screen();
+    condition_check();
     # total memory in the 18 pages
     log(65536 * 18);
     # total memory used by this screen
@@ -108,9 +181,8 @@ export def main() -> i32 {
     log(65536 * 18 - 680 * 420 * 4);
     # the font memory
     log(94*8*11);
-    # char_cli(12);
-    condition_check();
-
+    font_program();
+    refresh_screen();
     # set the return value 0 from the function
     0
 } as main

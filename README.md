@@ -25,12 +25,18 @@ def NAME ( param : [i32 | i64] * ) -> [i32 | i64] {
 ## local variable definition
 let NAME = expression;
 
-## memory manipulation (store8) *for know we let the default store operation be 8 bits*
-mem\[address\] = expression;
+## memory manipulation
+### store8
+store8\[address\] = expression;
 set a memory value at address to expression value
-mem is the command keyword
+store8 is the memory command keyword
 address is an expression that results into an integer
 expression results into the integer value to be stored at that memory location
+
+### load8
+load8\[address\]
+
+load 8 bits from the memory ready to be used in expressions by the program.
 
 ## call function
 NAME \( args * \);
@@ -47,15 +53,17 @@ for local_var in range(0, 155) {
 A local variable will be set that tracks what index in the loop we are at.
 increment this local variable at the end of the loop.
 
+## If statements
+if condition { block }
+optional:
+else { block }
+
 
 # TODO
 - [x] The nameplus to change it into typelist and make parameters free for the function statement
 - [x] Build a wat version of the add function
 - [x] add more binary operations (with precedence)
 - [x] build a definition for a local variable
-- [x] BUGGED build a definition for memory manipulation
-    - [x] FIX use the mem keyword when referring to memory
-    - [ ] TODO change the memory kyewor to the store8 keyword.
 - [x] FIX can handle function definitions without arguments
 - [x] build a function call definition
 - [x] build comment definition
@@ -75,3 +83,6 @@ increment this local variable at the end of the loop.
     - [x] >
     - [x] <=
     - [x] >=
+- [ ] Memory
+    - [x] store8\[address\] = value;
+    - [ ] load8\[address\]

@@ -53,9 +53,10 @@
             // console.log("canvas image data!")
             // let img_data = ctx.getImageData(0, 0, screen.width, screen.height, {"colorSpace" : "srgb"});
             // console.log(img_data);
-            let wasmem = new ImageData(new Uint8ClampedArray(instance.exports.wasmem.buffer).slice(0, 1142400), 680, 420, {"colorSpace": "srgb"});
-            console.log(wasmem);
-            ctx.putImageData(wasmem, 0, 0)
+            let screen = new ImageData(new Uint8ClampedArray(instance.exports.wasmem.buffer).slice(0, 1142400), 680, 420, {"colorSpace": "srgb"});
+            console.log("screen:")
+            console.log(screen);
+            ctx.putImageData(screen, 0, 0)
         }
         
 
@@ -74,9 +75,8 @@
             instance.exports.main();
             // console.log("Memory data!")
             // console.log(new Uint8ClampedArray(instance.exports.mem.buffer));
-            
-            const result = instance.exports.add(36, 33);
-            console.log(result);
+            console.log("Total memory:");
+            console.log(new Uint8ClampedArray(instance.exports.wasmem.buffer));
         })();
     </script>
 </body>

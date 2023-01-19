@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "FOR", "IN", "RANGE", "IF", "ELSE", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "BINEQUAL", "BINNOTEQUAL", "BINLSS", "BINGTR", "BINLSSEQUAL", "BINGTREQUAL", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "STORE8", "LOAD8", "FOR", "IN", "RANGE", "IF", "ELSE", "AND", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "BINEQUAL", "BINNOTEQUAL", "BINLSS", "BINGTR", "BINLSSEQUAL", "BINGTREQUAL", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
 
 
 @pg.production("modules : modules module")
@@ -83,7 +83,7 @@ def commentary(p):
 def let_expr_block(p):
     return LetStmt(p[1], p[3])
 
-@pg.production("memstore : MEM LSQRBRACE sum RSQRBRACE EQUALS sum SEMICOLON")
+@pg.production("memstore : STORE8 LSQRBRACE sum RSQRBRACE EQUALS sum SEMICOLON")
 def mem_expr_block(p):
     return Memory_Store(p[2], p[5])
 
@@ -94,8 +94,16 @@ def mem_expr_block(p):
 def atom_value(p):
     return Value(p[0])
 
+@pg.production("atom : load8")
+def atom_load8(p):
+    return p[0]
+
+@pg.production("load8 : LOAD8 LSQRBRACE sum RSQRBRACE")
+def load8(p):
+    return Memory_Load(p[2])
+
 # atom
-@pg.production("atom : IDENTIFIER LPAR arguments RPAR SEMICOLON")
+@pg.production("atom : IDENTIFIER LPAR arguments RPAR SEMICOLON") # FIXME this expects an ';' at the end of the call. When used in an expression I think this is not wanted behaviour. SOLUTION: remove the semicolon reference
 def function_call(p):
     return FunctionCall(p[0].getstr(), p[2])
 
@@ -140,17 +148,26 @@ def product_condition(p):
 
 
 # condition
-@pg.production("condition : condition BINEQUAL atom")
-@pg.production("condition : condition BINNOTEQUAL atom")
-@pg.production("condition : condition BINLSS atom")
-@pg.production("condition : condition BINGTR atom")
-@pg.production("condition : condition BINLSSEQUAL atom")
-@pg.production("condition : condition BINGTREQUAL atom")
+@pg.production("condition : condition BINEQUAL boolop")
+@pg.production("condition : condition BINNOTEQUAL boolop")
+@pg.production("condition : condition BINLSS boolop")
+@pg.production("condition : condition BINGTR boolop")
+@pg.production("condition : condition BINLSSEQUAL boolop")
+@pg.production("condition : condition BINGTREQUAL boolop")
 def bin_condition(p):
     return BinaryOp(p[0], p[1], p[2])
 
-@pg.production("condition : atom")
+@pg.production("condition : boolop")
 def condition_atom(p):
+    return p[0]
+
+# boolean binop
+@pg.production("boolop : boolop AND atom")
+def binboolop(p):
+    return BinaryOp(p[0], p[1], p[2])
+
+@pg.production("boolop : atom")
+def bool_op(p):
     return p[0]
 
 @pg.production("parameters : parameters COMMA param")
