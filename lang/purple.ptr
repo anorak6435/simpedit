@@ -18,47 +18,57 @@ def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
     store8[pxl_start+3] = a;
 }
 
-def print_char_scanline(bitmap : i32, line : i32) -> void {
+def print_char_scanline(bitmap : i32, cursor_x : i32, pixel_row : i32) -> void {
     if (bitmap && 128 > 0) {
-        setpixel(0, line, 0, 0, 0, 255);
+        setpixel(cursor_x, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x, pixel_row, 0, 0, 0, 0);
     }
     if (bitmap && 64 > 0) {
-        setpixel(1, line, 0, 0, 0, 255);
+        setpixel(cursor_x+1, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x+1, pixel_row, 0, 0, 0, 0);
     }
     if (bitmap && 32 > 0) {
-        setpixel(2, line, 0, 0, 0, 255);
+        setpixel(cursor_x+2, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x+2, pixel_row, 0, 0, 0, 0);
     }
     if (bitmap && 16 > 0) {
-        setpixel(3, line, 0, 0, 0, 255);
+        setpixel(cursor_x+3, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x+3, pixel_row, 0, 0, 0, 0);
     }
     if (bitmap && 8 > 0) {
-        setpixel(4, line, 0, 0, 0, 255);
+        setpixel(cursor_x+4, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x+4, pixel_row, 0, 0, 0, 0);
     }
     if (bitmap && 4 > 0) {
-        setpixel(5, line, 0, 0, 0, 255);
+        setpixel(cursor_x+5, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x+5, pixel_row, 0, 0, 0, 0);
     }
     if (bitmap && 2 > 0) {
-        setpixel(6, line, 0, 0, 0, 255);
+        setpixel(cursor_x+6, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x+6, pixel_row, 0, 0, 0, 0);
     }
     if (bitmap && 1 > 0) {
-        setpixel(7, line, 0, 0, 0, 255);
+        setpixel(cursor_x+7, pixel_row, 0, 0, 0, 255);
+    } else {
+        setpixel(cursor_x+7, pixel_row, 0, 0, 0, 0);
     }
 }
 
-def char_cli(char : i32) -> void {
-    # writes a character to the screen
-    if (char == 65) {
-        # found the A character.
-        let screen_end = 680 * 420 * 4;
-        let char_start = screen_end + (char-32)*(8*11);
-        for scanline in range(0, 11) {
-            let char_line = char_start + scanline;
-            log(char_line); 
-            print_char_scanline(load8[char_line], scanline);
-        }
-        log(1111);
-    } else {
-        log(6666);
+def char_cli(char : i32, column : i32, row : i32) -> void {
+    # writes a character to the screen on cursor column / cursor row
+    # found the A character.
+    let screen_end = 680 * 420 * 4;
+    let char_start = screen_end + (char-32)*11;
+    for scanline in range(0, 11) {
+        let char_line = char_start + scanline;
+        print_char_scanline(load8[char_line], column * 8, row + scanline);
     }
 }
 
@@ -66,26 +76,433 @@ def load_font() -> void {
     # store the bitmap of the font
     # 'A' CHARACTER 65 ascii code
     let screen_end = 680 * 420 * 4;
-    let a_start = screen_end + (65-32)*(8*11);
+    let char_start = screen_end + (65-32)*11;
     log(437);
-    log(a_start);
-    store8[a_start] = 48;
-    store8[a_start+1] = 120;
-    store8[a_start+2] = 220;
-    store8[a_start+3] = 204;
-    store8[a_start+4] = 252;
-    store8[a_start+5] = 252;
-    store8[a_start+6] = 204;
-    store8[a_start+7] = 204;
-    store8[a_start+8] = 204;
-    store8[a_start+9] = 0;
-    store8[a_start+10] = 0;
+    log(char_start);
+    store8[char_start] = 48;
+    store8[char_start+1] = 120;
+    store8[char_start+2] = 220;
+    store8[char_start+3] = 204;
+    store8[char_start+4] = 252;
+    store8[char_start+5] = 252;
+    store8[char_start+6] = 204;
+    store8[char_start+7] = 204;
+    store8[char_start+8] = 204;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
     # END of 'A' Character
+    # Start of 'B' Character 66 ascii code
+    let char_start = char_start + 11;
+    store8[char_start] = 248;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 220;
+    store8[char_start+3] = 204;
+    store8[char_start+4] = 252;
+    store8[char_start+5] = 220;
+    store8[char_start+6] = 204;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 248;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'B' Character
+    # Start of 'C' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 60;
+    store8[char_start+1] = 124;
+    store8[char_start+2] = 224;
+    store8[char_start+3] = 192;
+    store8[char_start+4] = 192;
+    store8[char_start+5] = 192;
+    store8[char_start+6] = 224;
+    store8[char_start+7] = 124;
+    store8[char_start+8] = 60;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'C' Character
+    # Start of 'D' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 248;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 220;
+    store8[char_start+3] = 204;
+    store8[char_start+4] = 204;
+    store8[char_start+5] = 204;
+    store8[char_start+6] = 220;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 248;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'D' Character'
+    # Start of 'E' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 252;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 192;
+    store8[char_start+3] = 192;
+    store8[char_start+4] = 240;
+    store8[char_start+5] = 192;
+    store8[char_start+6] = 192;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 252;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'E' Character
+    # Start of 'F' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 124;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 192;
+    store8[char_start+3] = 192;
+    store8[char_start+4] = 240;
+    store8[char_start+5] = 192;
+    store8[char_start+6] = 192;
+    store8[char_start+7] = 192;
+    store8[char_start+8] = 192;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'F' Character
+    # Start of 'G' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 124;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 192;
+    store8[char_start+3] = 192;
+    store8[char_start+4] = 216;
+    store8[char_start+5] = 220;
+    store8[char_start+6] = 204;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 120;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'G' Character
+    # Start of 'H' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 204;
+    store8[char_start+1] = 204;
+    store8[char_start+2] = 204;
+    store8[char_start+3] = 252;
+    store8[char_start+4] = 252;
+    store8[char_start+5] = 204;
+    store8[char_start+6] = 204;
+    store8[char_start+7] = 204;
+    store8[char_start+8] = 204;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'H' Character
+    # Start of 'I' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 252;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 48;
+    store8[char_start+3] = 48;
+    store8[char_start+4] = 48;
+    store8[char_start+5] = 48;
+    store8[char_start+6] = 48;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 252;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'I' Character
+    # Start of 'J' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 120;
+    store8[char_start+1] = 120;
+    store8[char_start+2] = 48;
+    store8[char_start+3] = 48;
+    store8[char_start+4] = 48;
+    store8[char_start+5] = 48;
+    store8[char_start+6] = 48;
+    store8[char_start+7] = 240;
+    store8[char_start+8] = 224;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'J' Character
+    # Start of 'K' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 204;
+    store8[char_start+1] = 204;
+    store8[char_start+2] = 216;
+    store8[char_start+3] = 248;
+    store8[char_start+4] = 240;
+    store8[char_start+5] = 248;
+    store8[char_start+6] = 216;
+    store8[char_start+7] = 204;
+    store8[char_start+8] = 204;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'K' Character
+    # Start of 'L' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 192;
+    store8[char_start+1] = 192;
+    store8[char_start+2] = 192;
+    store8[char_start+3] = 192;
+    store8[char_start+4] = 192;
+    store8[char_start+5] = 192;
+    store8[char_start+6] = 192;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 252;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'L' Character
+    # Start of 'M' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 198;
+    store8[char_start+1] = 238;
+    store8[char_start+2] = 254;
+    store8[char_start+3] = 254;
+    store8[char_start+4] = 214;
+    store8[char_start+5] = 198;
+    store8[char_start+6] = 198;
+    store8[char_start+7] = 198;
+    store8[char_start+8] = 198;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'M' Character
+    # Start of 'N' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 198;
+    store8[char_start+1] = 230;
+    store8[char_start+2] = 230;
+    store8[char_start+3] = 246;
+    store8[char_start+4] = 254;
+    store8[char_start+5] = 222;
+    store8[char_start+6] = 206;
+    store8[char_start+7] = 206;
+    store8[char_start+8] = 198;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'N' Character
+    # Start of 'O' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 124;
+    store8[char_start+1] = 254;
+    store8[char_start+2] = 198;
+    store8[char_start+3] = 198;
+    store8[char_start+4] = 198;
+    store8[char_start+5] = 198;
+    store8[char_start+6] = 198;
+    store8[char_start+7] = 254;
+    store8[char_start+8] = 124;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'O' Character
+    # Start of 'P' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 252;
+    store8[char_start+1] = 254;
+    store8[char_start+2] = 198;
+    store8[char_start+3] = 198;
+    store8[char_start+4] = 254;
+    store8[char_start+5] = 252;
+    store8[char_start+6] = 192;
+    store8[char_start+7] = 192;
+    store8[char_start+8] = 192;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'P' Character
+    # Start of 'Q' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 120;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 204;
+    store8[char_start+3] = 204;
+    store8[char_start+4] = 204;
+    store8[char_start+5] = 220;
+    store8[char_start+6] = 248;
+    store8[char_start+7] = 124;
+    store8[char_start+8] = 14;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'Q' Character
+    # Start of 'R' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 252;
+    store8[char_start+1] = 254;
+    store8[char_start+2] = 198;
+    store8[char_start+3] = 198;
+    store8[char_start+4] = 254;
+    store8[char_start+5] = 252;
+    store8[char_start+6] = 248;
+    store8[char_start+7] = 220;
+    store8[char_start+8] = 206;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'R' Character
+    # Start of 'S' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 124;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 192;
+    store8[char_start+3] = 248;
+    store8[char_start+4] = 252;
+    store8[char_start+5] = 12;
+    store8[char_start+6] = 12;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 248;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'S' Character
+    # Start of 'T' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 252;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 48;
+    store8[char_start+3] = 48;
+    store8[char_start+4] = 48;
+    store8[char_start+5] = 48;
+    store8[char_start+6] = 48;
+    store8[char_start+7] = 48;
+    store8[char_start+8] = 48;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'T' Character
+    # Start of 'U' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 204;
+    store8[char_start+1] = 204;
+    store8[char_start+2] = 204;
+    store8[char_start+3] = 204;
+    store8[char_start+4] = 204;
+    store8[char_start+5] = 204;
+    store8[char_start+6] = 204;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 120;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'U' Character
+    # Start of 'V' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 198;
+    store8[char_start+1] = 198;
+    store8[char_start+2] = 198;
+    store8[char_start+3] = 68;
+    store8[char_start+4] = 108;
+    store8[char_start+5] = 108;
+    store8[char_start+6] = 56;
+    store8[char_start+7] = 56;
+    store8[char_start+8] = 16;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'V' Character
+    # Start of 'W' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 130;
+    store8[char_start+1] = 130;
+    store8[char_start+2] = 130;
+    store8[char_start+3] = 198;
+    store8[char_start+4] = 214;
+    store8[char_start+5] = 124;
+    store8[char_start+6] = 108;
+    store8[char_start+7] = 68;
+    store8[char_start+8] = 0;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'W' Character
+    # Start of 'X' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 132;
+    store8[char_start+1] = 204;
+    store8[char_start+2] = 120;
+    store8[char_start+3] = 48;
+    store8[char_start+4] = 48;
+    store8[char_start+5] = 120;
+    store8[char_start+6] = 72;
+    store8[char_start+7] = 204;
+    store8[char_start+8] = 132;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'X' Character
+    # Start of 'Y' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 204;
+    store8[char_start+1] = 204;
+    store8[char_start+2] = 204;
+    store8[char_start+3] = 252;
+    store8[char_start+4] = 120;
+    store8[char_start+5] = 48;
+    store8[char_start+6] = 48;
+    store8[char_start+7] = 48;
+    store8[char_start+8] = 48;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'Y' Character
+    # Start of 'Z' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 252;
+    store8[char_start+1] = 252;
+    store8[char_start+2] = 12;
+    store8[char_start+3] = 24;
+    store8[char_start+4] = 48;
+    store8[char_start+5] = 96;
+    store8[char_start+6] = 192;
+    store8[char_start+7] = 252;
+    store8[char_start+8] = 252;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of 'Z' Character
 }
 
 def font_program() -> void {
     load_font();
-    char_cli(65);
+    for ch_line in range(0, 38) {
+        for ch_index in range(0, 85) {
+            log((ch_index + 65) % 10);
+            char_cli((ch_line + ch_index) % 26 + 65, ch_index, ch_line * 11);
+        }
+    }
+    # A
+    # char_cli(65, 0, 0);
+    # B
+    # char_cli(66, 1, 0);
+    # C
+    # char_cli(67, 2, 0);
+    # D
+    # char_cli(68, 3, 0);
+    # E
+    # char_cli(69, 4, 0);
+    # F
+    # char_cli(70, 5, 0);
+    # G
+    # char_cli(71, 6, 0);
+    # H
+    # char_cli(72, 7, 0);
+    # I
+    # char_cli(73, 8, 0);
+    # J
+    # char_cli(74, 9, 0);
+    # K
+    # char_cli(75, 10, 0);
+    # L
+    # char_cli(76, 11, 0);
+    # M
+    # char_cli(77, 12, 0);
+    # N
+    # char_cli(78, 13, 0);
+    # O
+    # char_cli(79, 14, 0);
+    # P
+    # char_cli(80, 15, 0);
+    # Q
+    # char_cli(81, 16, 0);
+    # R
+    # char_cli(82, 17, 0);
+    # S
+    # char_cli(83, 18, 0);
+    # T
+    # char_cli(84, 19, 0);
+    # U
+    # char_cli(85, 20, 0);
+    # V
+    # char_cli(86, 21, 0);
+    # W
+    # char_cli(87, 22, 0);
+    # X
+    # char_cli(88, 23, 0);
+    # Y
+    # char_cli(89, 24, 0);
+    # Z
+    # char_cli(90, 25, 0);
 }
 
 
@@ -162,14 +579,14 @@ def condition_check() -> void {
 
 export def main() -> i32 {
     add(410, 10);
-    log();
+    log(); # logs the result of the add function that was put on the stack of the main function.
     for yi in range(0, 420) {
         for xi in range(0, 680) {
             # red is alert on changes in the code
             # log(xi);
             # log(yi);
             # setpixel(xi, yi, 255, 0, 0, 255);
-            setpixel(xi, yi, 165, 55, 253, 255); # purple pixels
+            # setpixel(xi, yi, 165, 55, 253, 255); # purple pixels
         }
     }
     condition_check();

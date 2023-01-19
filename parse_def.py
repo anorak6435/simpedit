@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "STORE8", "LOAD8", "FOR", "IN", "RANGE", "IF", "ELSE", "AND", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "BINEQUAL", "BINNOTEQUAL", "BINLSS", "BINGTR", "BINLSSEQUAL", "BINGTREQUAL", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "STORE8", "LOAD8", "FOR", "IN", "RANGE", "IF", "ELSE", "AND", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "BINEQUAL", "BINNOTEQUAL", "BINLSS", "BINGTR", "BINLSSEQUAL", "BINGTREQUAL", "EQUALS", "PLUS", "MINUS", 'MOD', "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
 
 
 @pg.production("modules : modules module")
@@ -140,6 +140,7 @@ def sum_product(p):
 # product
 @pg.production("product : product MUL condition")
 @pg.production("product : product DIV condition")
+@pg.production("product : product MOD condition")
 def bin_prod(p):
     return BinaryOp(p[0], p[1], p[2])
 @pg.production("product : condition")

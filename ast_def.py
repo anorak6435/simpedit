@@ -178,7 +178,7 @@ class FuncMdl(BaseBox):
         
         locals_str = "" #default the value to nothing
         if len(self.body.statements) > 0:
-            let_stmts = iter_body_stmts_for_let_stmts(self.body.statements[0].statements)
+            let_stmts = set(iter_body_stmts_for_let_stmts(self.body.statements[0].statements)) # use the set to remove the duplicate values
             
             locals_str = "".join(list(map(local_tag_from_letstatement, let_stmts)))
         # print(locals_str, type(locals_str))
@@ -208,6 +208,13 @@ class LetStmt(BaseBox):
 
     def eval(self) -> str:
         return f"(local.set ${self.name}\n{self.val_expr.eval()}\n)"
+
+    # use the hash and eq function for the set() function that is used to find unique values
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __hash__(self) -> int:
+        return hash(('name', self.name))
 
 class Memory_Store(BaseBox):
     def __init__(self, address, val_expr) -> None:
@@ -261,6 +268,8 @@ class BinaryOp(BaseBox):
                 op = "mul"
             case "/":
                 op = "div_u"
+            case "%":
+                op = "rem_u"
             case "==":
                 op = "eq"
             case "!=":
