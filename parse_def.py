@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "FOR", "IN", "RANGE", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "FOR", "IN", "RANGE", "IF", "ELSE", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "BINEQUAL", "BINNOTEQUAL", "BINLSS", "BINGTR", "BINLSSEQUAL", "BINGTREQUAL", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
 
 
 @pg.production("modules : modules module")
@@ -59,12 +59,21 @@ def single_statement_inner_func(p):
 @pg.production("stmt : sum")
 @pg.production("stmt : comment")
 @pg.production("stmt : forloop")
+@pg.production("stmt : if")
 def innerfunc_values(p):
     return p[0]
 
 @pg.production("forloop : FOR IDENTIFIER IN RANGE LPAR sum COMMA sum RPAR body")
 def forloop(p):
     return ForLoop(p[1], p[5], p[7], p[9])
+
+@pg.production("if : IF sum body")
+def if_stmt(p):
+    return IfStmt(p[1], p[2], Block([]))
+
+@pg.production("if : IF sum body ELSE body")
+def if_stmt(p):
+    return IfStmt(p[1], p[2], p[4])
 
 @pg.production("comment : COMMENT")
 def commentary(p):
@@ -121,12 +130,27 @@ def bin_sum(p):
 def sum_product(p):
     return p[0]
 # product
-@pg.production("product : product MUL atom")
-@pg.production("product : product DIV atom")
+@pg.production("product : product MUL condition")
+@pg.production("product : product DIV condition")
 def bin_prod(p):
     return BinaryOp(p[0], p[1], p[2])
-@pg.production("product : atom")
-def product_atom(p):
+@pg.production("product : condition")
+def product_condition(p):
+    return p[0]
+
+
+# condition
+@pg.production("condition : condition BINEQUAL atom")
+@pg.production("condition : condition BINNOTEQUAL atom")
+@pg.production("condition : condition BINLSS atom")
+@pg.production("condition : condition BINGTR atom")
+@pg.production("condition : condition BINLSSEQUAL atom")
+@pg.production("condition : condition BINGTREQUAL atom")
+def bin_condition(p):
+    return BinaryOp(p[0], p[1], p[2])
+
+@pg.production("condition : atom")
+def condition_atom(p):
     return p[0]
 
 @pg.production("parameters : parameters COMMA param")

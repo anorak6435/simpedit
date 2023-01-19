@@ -69,6 +69,15 @@ class LambdaType(BaseBox):
     def eval(self) -> str:
         return f" (param {self.typ})"
 
+class IfStmt(BaseBox):
+    def __init__(self, condition, true_block, false_block) -> None:
+        self.condition = condition
+        self.true_block = true_block
+        self.false_block = false_block
+
+    def eval(self) -> str:
+        return f"{self.condition.eval()}\n(if (then\n{self.true_block.eval()})\n(else\n{self.false_block.eval()}\n))"
+        
 
 class Parameters(BaseBox):
     def __init__(self, param_lst):
@@ -170,12 +179,6 @@ class FuncMdl(BaseBox):
         locals_str = "" #default the value to nothing
         if len(self.body.statements) > 0:
             let_stmts = iter_body_stmts_for_let_stmts(self.body.statements[0].statements)
-
-            # print("stmts:", let_stmts)
-            # let_stmts = list(filter(is_let_stmt, self.body.statements[0].statements))
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
             locals_str = "".join(list(map(local_tag_from_letstatement, let_stmts)))
         # print(locals_str, type(locals_str))
@@ -246,6 +249,18 @@ class BinaryOp(BaseBox):
                 op = "mul"
             case "/":
                 op = "div_u"
+            case "==":
+                op = "eq"
+            case "!=":
+                op = "ne"
+            case "<=":
+                op = "le_u"
+            case ">=":
+                op = "ge_u"
+            case "<":
+                op = "lt_u"
+            case ">":
+                op = "gt_u"
             case _:
                 raise Exception(f"No watcode found for operation: {self.op.getstr()}")
 

@@ -4,10 +4,45 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even){background-color: #f2f2f2}
+
+        th {
+            background-color: #6f06c4;
+            color: white;
+        }
+    </style>
     <title>SimpleEdit</title>
 </head>
 <body>
     <canvas id="screen" width="680" height="420" style="border:1px solid #000000;"></canvas>
+    <table style="nth-child(even) {background-color: #f2f2f2;}">
+        <tr>
+            <th>Name</th><th>MemoryAddress Start</th><th>MemoryAddress End</th><th>Memory Size</th>
+        </tr>
+        <tr>
+            <td>Screen</td><td>0</td><td>1142399</td><td>1142400</td>
+        </tr>
+        <tr>
+            <td>Font</td><td>1142400</td><td>1150672</td><td>8272</td>
+        </tr>
+        <tr>
+            <td>Total Memory</td><td>0</td><td>1179648</td><td>1179648</td>
+        </tr>
+        <tr>
+            <td>Memory left</td><td>1150672</td><td>1179648</td><td>28976</td>
+        </tr>
+    </table>
 
     <script>
         const screen = document.querySelector("#screen");

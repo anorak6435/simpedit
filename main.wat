@@ -25,6 +25,85 @@
 (local.get $a)
 (i32.store8)
 )
+(func $char_cli (param $char i32)
+(i32.eq (local.get $char) (i32.const 65))
+(if (then
+(call $log (i32.const 1111)))
+(else
+(call $log (i32.const 6666))
+))
+)
+(func $condition_check (local $test i32)
+(local.set $test
+(i32.const 1)
+)
+(i32.eq (local.get $test) (i32.const 1))
+(if (then
+(call $log (i32.const 1111)))
+(else
+(call $log (i32.const 6666))
+))
+(i32.ne (local.get $test) (i32.const 0))
+(if (then
+(call $log (i32.const 1111)))
+(else
+(call $log (i32.const 6666))
+))
+(i32.ne (local.get $test) (i32.const 1))
+(if (then
+(call $log (i32.const 6666)))
+(else
+(call $log (i32.const 1111))
+))
+(i32.lt_u (local.get $test) (i32.const 2))
+(if (then
+(call $log (i32.const 1111)))
+(else
+(call $log (i32.const 6666))
+))
+(i32.lt_u (i32.const 2) (local.get $test))
+(if (then
+(call $log (i32.const 6666)))
+(else
+(call $log (i32.const 1111))
+))
+(i32.gt_u (i32.const 2) (local.get $test))
+(if (then
+(call $log (i32.const 1111)))
+(else
+(call $log (i32.const 6666))
+))
+(i32.gt_u (local.get $test) (i32.const 2))
+(if (then
+(call $log (i32.const 6666)))
+(else
+(call $log (i32.const 1111))
+))
+(i32.le_u (local.get $test) (i32.const 2))
+(if (then
+(call $log (i32.const 1111)))
+(else
+(call $log (i32.const 6666))
+))
+(i32.le_u (i32.const 2) (local.get $test))
+(if (then
+(call $log (i32.const 6666)))
+(else
+(call $log (i32.const 1111))
+))
+(i32.ge_u (i32.const 2) (local.get $test))
+(if (then
+(call $log (i32.const 1111)))
+(else
+(call $log (i32.const 6666))
+))
+(i32.ge_u (local.get $test) (i32.const 2))
+(if (then
+(call $log (i32.const 6666)))
+(else
+(call $log (i32.const 1111))
+))
+)
 (func $main (export "main") (result i32) (local $yi i32) (local $xi i32)
 (call $add (i32.const 410) (i32.const 10))
 (call $log)
@@ -65,6 +144,10 @@
 (call $log (i32.mul (i32.mul (i32.const 680) (i32.const 420)) (i32.const 4)))
 ;; memory left after screen.
 (call $log (i32.sub (i32.mul (i32.const 65536) (i32.const 18)) (i32.mul (i32.mul (i32.const 680) (i32.const 420)) (i32.const 4))))
+;; the font memory
+(call $log (i32.mul (i32.mul (i32.const 94) (i32.const 8)) (i32.const 11)))
+;; char_cli(12);
+(call $condition_check)
 ;; set the return value 0 from the function
 (i32.const 0)
 )

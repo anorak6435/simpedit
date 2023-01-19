@@ -64,4 +64,14 @@ increment this local variable at the end of the loop.
     - [x] FIX made me realise that the function closing paren has te be on it's own line otherwise it will be commented out.
 - [x] build a for loop definition
     - [x] build a nested for loop
-- [ ] setup walking through the statements and inner statements of loops to get let statements
+- [x] setup walking through the statements and inner statements of loops to get let statements
+- [x] make if conditions happen
+    - [x] if condition statement
+    - [x] if else condition statements
+- condition checks
+    - [x] ==
+    - [x] !=
+    - [x] <
+    - [x] >
+    - [x] <=
+    - [x] >=
