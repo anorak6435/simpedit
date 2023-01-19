@@ -1,6 +1,9 @@
 # define the ast for the language
 from rply.token import BaseBox, Token
 
+# global variables_defining_scopes_/_context of functions
+global_var = {"function_name" : "", "loop_index": 0 }
+
 class Comment(BaseBox):
     def __init__(self, comment_string):
         self.comment_string = comment_string
@@ -12,15 +15,14 @@ class LambdaMdl(BaseBox):
     def __init__(self, name, params : list[str], return_type : str = None):
         self.name = name
         self.params = params
-        if len(self.params) > 0:
-            self.params[0] = " " + self.params[0]
         self.return_type = return_type
 
     def eval(self) -> str:
+        param_str = "".join([param.eval() for param in self.params])
         if self.return_type is None:
-            return "(func $" + self.name + " ".join(self.params) + ")"
+            return "(func $" + self.name + param_str + ")"
         else:
-            return "(func $" + self.name + " ".join(self.params) + self.return_stmt + ")"
+            return "(func $" + self.name + param_str + self.return_stmt + ")"
 
 class Block(BaseBox):
     def __init__(self, stmts):
@@ -32,6 +34,41 @@ class Block(BaseBox):
     def eval(self) -> str:
         "return the statements given as webassembly text"
         return "\n".join([stmt.eval() for stmt in self.statements])
+
+class ForLoop(BaseBox):
+    def __init__(self, loop_var, start_idx, end_idx, body) -> None:
+        self.loop_var = loop_var
+        self.init_loop_var = LetStmt(loop_var, start_idx)
+        self.increment_loop_var = LetStmt(loop_var , BinaryOp(Value(loop_var), Token("PLUS", "+"), Value(Token("INT", 1))))
+        self.start_idx = start_idx
+        self.end_idx = end_idx
+        self.body = body
+    
+    def eval(self) -> str:
+        global global_var
+        break_tag = f"$break_{global_var['function_name'] + '_' + str(global_var['loop_index'])}"
+        top_tag = f"$top_{global_var['function_name'] + '_' + str(global_var['loop_index'])}"
+        condition = f"(i32.eq {Value(self.loop_var).eval()} {self.end_idx.eval()})"
+        loop_var_wat = self.init_loop_var.eval()
+        loop_var_inc_wat = self.increment_loop_var.eval()
+        loop_head = f"(block {break_tag}\n(loop {top_tag}\n(br_if {break_tag} {condition})"
+        loop_end = f"(br {top_tag})\n)\n)"
+
+        # Important to increment the loop_index before we go into the loop body
+        global_var["loop_index"] += 1
+
+        ret_wat = f"{loop_var_wat}\n{loop_head}\n{self.body.eval()}\n{loop_var_inc_wat}\n{loop_end}"
+
+        
+        return ret_wat
+
+class LambdaType(BaseBox):
+    def __init__(self, typ) -> None:
+        self.typ = typ
+
+    def eval(self) -> str:
+        return f" (param {self.typ})"
+
 
 class Parameters(BaseBox):
     def __init__(self, param_lst):
@@ -75,6 +112,8 @@ class Arg(BaseBox):
         return " " + self.expr_val.eval()
 
 
+def local_tag_from_letstatement(value):
+    return f" (local ${value.name} i32)"
 
 def add_quotes(val):
     return '\"' + val + '\"'
@@ -124,18 +163,39 @@ class FuncMdl(BaseBox):
         return self.body.eval()
 
     def eval(self, export="") -> str:
-        # print("params : ", self.params)
+        global global_var
+        global_var["function_name"] = self.name # sets the right context for generated names
+        global_var["loop_index"] = 0
+        
         locals_str = "" #default the value to nothing
         if len(self.body.statements) > 0:
-            let_stmts = list(filter(is_let_stmt, self.body.statements[0].statements))
-            locals_str = "".join(list(map(lambda val: f" (local ${val.name} i32)", let_stmts)))
-        print(locals_str, type(locals_str))
+            let_stmts = iter_body_stmts_for_let_stmts(self.body.statements[0].statements)
+
+            # print("stmts:", let_stmts)
+            # let_stmts = list(filter(is_let_stmt, self.body.statements[0].statements))
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            locals_str = "".join(list(map(local_tag_from_letstatement, let_stmts)))
+        # print(locals_str, type(locals_str))
         func_tag = f"(func ${self.name}{export}" + self.params.eval() + self.result_tag() + f"{locals_str}\n" + self.bodystmts() + "\n)"
         return func_tag
 
+def iter_body_stmts_for_let_stmts(body_stmts):
+    stmts = []
+    for val in body_stmts:
+        if isinstance(val, LetStmt):
+            stmts.append(val)
+        elif isinstance(val, ForLoop):
+            stmts.append(val.init_loop_var) # get it's init value
+            stmts.extend(iter_body_stmts_for_let_stmts(val.body.statements[0].statements)) # get possible let statements from the loop body
+            # assert False, (dir(val.body.statements[0]), val.body.statements[0].statements)
+    return stmts
+
 class LetStmt(BaseBox):
-    def __init__(self, name, val_expr) -> None:
-        self.name = name
+    def __init__(self, name : Token, val_expr) -> None:
+        self.name = name.getstr()
         self.val_expr = val_expr
 
     def eval(self) -> str:
@@ -185,11 +245,8 @@ class BinaryOp(BaseBox):
             case "*":
                 op = "mul"
             case "/":
-                op = "div"
+                op = "div_u"
             case _:
                 raise Exception(f"No watcode found for operation: {self.op.getstr()}")
 
         return f"(i32.{op} {self.left.eval()} {self.right.eval()})"
-
-def is_let_stmt(val):
-    return isinstance(val, LetStmt)

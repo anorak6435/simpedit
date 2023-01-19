@@ -1,9 +1,9 @@
 import env.log as lambda log (i32)
 import env.refresh_screen as lambda refresh_screen ()
 export memory wasmem 18 as wasmem
-def add (x : i32, y : i32) -> i32 {
+export def add (x : i32, y : i32) -> i32 {
     x + y
-}
+} as add
 
 # made a formula to check if math precedence was handled
 def formula(x : i32, y : i32, z : i32) -> i32 {
@@ -18,7 +18,25 @@ def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
     mem[pxl_start+3] = a;
 }
 
-def main() -> i32 {
+export def main() -> i32 {
     add(410, 10);
-    # log();
-}
+    log();
+    for yi in range(0, 420) {
+        for xi in range(0, 680) {
+            # red is alert on changes in the code
+            # log(xi);
+            # log(yi);
+            # setpixel(xi, yi, 255, 0, 0, 255);
+            setpixel(xi, yi, 165, 55, 253, 255); # purple pixels
+        }
+    }
+    refresh_screen();
+    # total memory in the 18 pages
+    log(65536 * 18);
+    # total memory used by this screen
+    log(680 * 420 * 4);
+    # memory left after screen.
+    log(65536 * 18 - 680 * 420 * 4);
+    # set the return value 0 from the function
+    0
+} as main

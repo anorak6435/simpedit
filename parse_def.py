@@ -1,13 +1,8 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"],
-    # the lower in list. The higher precedence
-    precedence=[
-        ('left', ['PLUS', 'MINUS']),
-        ('left', ['MUL', 'DIV'])
-    ]
-)
+pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "MEM", "FOR", "IN", "RANGE", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "EQUALS", "PLUS", "MINUS", "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
+
 
 @pg.production("modules : modules module")
 def statements(p):
@@ -48,7 +43,7 @@ def empty_func_body(p):
     return Block([])
 
 @pg.production("body : LBRACE innerfunc RBRACE")
-def expression_block(p):
+def body_block(p):
     return Block([p[1]])
 
 @pg.production("innerfunc : innerfunc stmt")
@@ -61,33 +56,42 @@ def single_statement_inner_func(p):
 
 @pg.production("stmt : vardeclar")
 @pg.production("stmt : memstore")
-@pg.production("stmt : expression")
+@pg.production("stmt : sum")
 @pg.production("stmt : comment")
+@pg.production("stmt : forloop")
 def innerfunc_values(p):
     return p[0]
+
+@pg.production("forloop : FOR IDENTIFIER IN RANGE LPAR sum COMMA sum RPAR body")
+def forloop(p):
+    return ForLoop(p[1], p[5], p[7], p[9])
 
 @pg.production("comment : COMMENT")
 def commentary(p):
     return Comment(p[0].getstr())
 
-@pg.production("vardeclar : LET IDENTIFIER EQUALS expression SEMICOLON")
-def let_expression_block(p):
-    return LetStmt(p[1].getstr(), p[3])
+@pg.production("vardeclar : LET IDENTIFIER EQUALS sum SEMICOLON")
+def let_expr_block(p):
+    return LetStmt(p[1], p[3])
 
-@pg.production("memstore : MEM LSQRBRACE expression RSQRBRACE EQUALS expression SEMICOLON")
-def mem_expression_block(p):
+@pg.production("memstore : MEM LSQRBRACE sum RSQRBRACE EQUALS sum SEMICOLON")
+def mem_expr_block(p):
     return Memory_Store(p[2], p[5])
 
-@pg.production("expression : IDENTIFIER")
-@pg.production("expression : INT")
-def expression_value(p):
+
+# atom
+@pg.production("atom : IDENTIFIER")
+@pg.production("atom : INT")
+def atom_value(p):
     return Value(p[0])
 
-@pg.production("expression : IDENTIFIER LPAR arguments RPAR SEMICOLON")
+# atom
+@pg.production("atom : IDENTIFIER LPAR arguments RPAR SEMICOLON")
 def function_call(p):
     return FunctionCall(p[0].getstr(), p[2])
 
-@pg.production("expression : IDENTIFIER LPAR RPAR SEMICOLON")
+# atom
+@pg.production("atom : IDENTIFIER LPAR RPAR SEMICOLON")
 def function_call_no_arguments(p):
     return FunctionCall(p[0].getstr(), Arguments([]))
 
@@ -99,20 +103,31 @@ def arguments(p):
 def arguments_one(p):
     return Arguments([Arg(p[0])])
 
-@pg.production("arg : expression")
+@pg.production("arg : sum")
 def arg(p):
     return p[0]
 
-@pg.production("expression : LPAR expression RPAR")
+# atom
+@pg.production("atom : LPAR sum RPAR")
 def parentesised_expr(p):
     return p[1]
 
-@pg.production("expression : expression PLUS expression")
-@pg.production("expression : expression MINUS expression")
-@pg.production("expression : expression MUL expression")
-@pg.production("expression : expression DIV expression")
-def plus_expression(p):
+# sum
+@pg.production("sum : sum PLUS product")
+@pg.production("sum : sum MINUS product")
+def bin_sum(p):
     return BinaryOp(p[0], p[1], p[2])
+@pg.production("sum : product")
+def sum_product(p):
+    return p[0]
+# product
+@pg.production("product : product MUL atom")
+@pg.production("product : product DIV atom")
+def bin_prod(p):
+    return BinaryOp(p[0], p[1], p[2])
+@pg.production("product : atom")
+def product_atom(p):
+    return p[0]
 
 @pg.production("parameters : parameters COMMA param")
 def mdl_func_param(p):
@@ -151,13 +166,13 @@ def no_typelist(_):
 def nameplus(p):
     # print("nameplus")
     # print(p)
-    return p[0] + [p[1].getstr()]
+    return p[0] + [LambdaType(p[1].getstr())]
 
 @pg.production("nameplus : IDENTIFIER")
 def nameplus(p):
     # print("nameplus IDENTIFIER")
     # print(p)
-    return [p[0].getstr()]
+    return [LambdaType(p[0].getstr())]
 
 # importname : IDENTIFIER ( DOT IDENTIFIER ) *
 @pg.production("importname : importname DOT IDENTIFIER")
@@ -170,7 +185,7 @@ def import_name_dot_name(p):
 def import_name(p):
     return [p[0].getstr()]
 
-@pg.error
-def error_handler(token):
-    raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())
+# @pg.error
+# def error_handler(token):
+#     raise ValueError("Ran into a %s where it wasn't expected" % token.gettokentype())
 parser = pg.build()

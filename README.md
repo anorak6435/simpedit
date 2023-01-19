@@ -35,6 +35,19 @@ expression results into the integer value to be stored at that memory location
 ## call function
 NAME \( args * \);
 
+## comment definition
+Comments are defined like in python
+\# following text is comemnted
+until the newline Than code can continue
+
+## for loop definition
+for local_var in range(0, 155) {
+    # instructions ...
+}
+A local variable will be set that tracks what index in the loop we are at.
+increment this local variable at the end of the loop.
+
+
 # TODO
 - [x] The nameplus to change it into typelist and make parameters free for the function statement
 - [x] Build a wat version of the add function
@@ -42,10 +55,13 @@ NAME \( args * \);
 - [x] build a definition for a local variable
 - [x] BUGGED build a definition for memory manipulation
     - [x] FIX use the mem keyword when referring to memory
+    - [ ] TODO change the memory kyewor to the store8 keyword.
 - [x] FIX can handle function definitions without arguments
 - [x] build a function call definition
 - [x] build comment definition
     - [x] inside functions comments
     - [x] outside function comments
     - [x] FIX made me realise that the function closing paren has te be on it's own line otherwise it will be commented out.
-- [ ] build a for loop definition
+- [x] build a for loop definition
+    - [x] build a nested for loop
+- [ ] setup walking through the statements and inner statements of loops to get let statements
