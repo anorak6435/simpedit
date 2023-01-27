@@ -2,12 +2,12 @@ import env.log as lambda log (i32)
 import env.refresh_screen as lambda refresh_screen ()
 export memory wasmem 18 as wasmem
 export def add (x : i32, y : i32) -> i32 {
-    x + y
+    return x + y;
 } as add
 
 # made a formula to check if math precedence was handled
 def formula(x : i32, y : i32, z : i32) -> i32 {
-    x + y * z - 4 / 2
+    return x + y * z - 4 / 2;
 }
 
 def setpixel(x : i32, y : i32, r : i32, g : i32, b : i32, a : i32) -> void {
@@ -447,62 +447,10 @@ def font_program() -> void {
     load_font();
     for ch_line in range(0, 38) {
         for ch_index in range(0, 85) {
-            log((ch_index + 65) % 10);
+            # log((ch_index + 65) % 10);
             char_cli((ch_line + ch_index) % 26 + 65, ch_index, ch_line * 11);
         }
     }
-    # A
-    # char_cli(65, 0, 0);
-    # B
-    # char_cli(66, 1, 0);
-    # C
-    # char_cli(67, 2, 0);
-    # D
-    # char_cli(68, 3, 0);
-    # E
-    # char_cli(69, 4, 0);
-    # F
-    # char_cli(70, 5, 0);
-    # G
-    # char_cli(71, 6, 0);
-    # H
-    # char_cli(72, 7, 0);
-    # I
-    # char_cli(73, 8, 0);
-    # J
-    # char_cli(74, 9, 0);
-    # K
-    # char_cli(75, 10, 0);
-    # L
-    # char_cli(76, 11, 0);
-    # M
-    # char_cli(77, 12, 0);
-    # N
-    # char_cli(78, 13, 0);
-    # O
-    # char_cli(79, 14, 0);
-    # P
-    # char_cli(80, 15, 0);
-    # Q
-    # char_cli(81, 16, 0);
-    # R
-    # char_cli(82, 17, 0);
-    # S
-    # char_cli(83, 18, 0);
-    # T
-    # char_cli(84, 19, 0);
-    # U
-    # char_cli(85, 20, 0);
-    # V
-    # char_cli(86, 21, 0);
-    # W
-    # char_cli(87, 22, 0);
-    # X
-    # char_cli(88, 23, 0);
-    # Y
-    # char_cli(89, 24, 0);
-    # Z
-    # char_cli(90, 25, 0);
 }
 
 
@@ -590,16 +538,8 @@ export def main() -> i32 {
         }
     }
     condition_check();
-    # total memory in the 18 pages
-    log(65536 * 18);
-    # total memory used by this screen
-    log(680 * 420 * 4);
-    # memory left after screen.
-    log(65536 * 18 - 680 * 420 * 4);
-    # the font memory
-    log(94*8*11);
     font_program();
     refresh_screen();
     # set the return value 0 from the function
-    0
+    return 0;
 } as main

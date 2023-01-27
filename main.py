@@ -10,6 +10,7 @@ lg.add("EXPORT", r"export(?!\w)")
 lg.add("AS", r"as(?!\w)")
 lg.add("LAMBDA", r"lambda(?!\w)")
 lg.add("MEMORY", r"memory(?!\w)")
+lg.add("RETURN", r"return(?!\w)")
 lg.add("DEF", r"def(?!\w)")
 lg.add("LET", r"let(?!\w)")
 lg.add("STORE8", r"store8(?!\w)")
@@ -54,12 +55,12 @@ with open("./lang/purple.ptr", "r") as f:
     src = f.read()
 
 lexer = lg.build()
-for tok in lexer.lex(src):
-    print(tok)
+# for tok in lexer.lex(src):
+#     print(tok)
 
 wat_text = parser.parse(lexer.lex(src)).eval()
 # print("The wat output text")
-print(wat_text)
+# print(wat_text)
 
 with open("main.wat", "w") as f:
     f.write(wat_text)

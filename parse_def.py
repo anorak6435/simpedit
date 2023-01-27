@@ -1,7 +1,7 @@
 from rply import ParserGenerator
 from ast_def import *
 
-pg = ParserGenerator(["IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LET", "STORE8", "LOAD8", "FOR", "IN", "RANGE", "IF", "ELSE", "AND", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "BINEQUAL", "BINNOTEQUAL", "BINLSS", "BINGTR", "BINLSSEQUAL", "BINGTREQUAL", "EQUALS", "PLUS", "MINUS", 'MOD', "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "COMMENT"])
+pg = ParserGenerator(["RETURN", "IMPORT", "EXPORT", "AS", "LAMBDA", "DEF", "LOAD8", "FOR", "IN", "RANGE", "IF", "ELSE", "AND", "RPAR", "LPAR", "LBRACE", "RBRACE", "LSQRBRACE", "RSQRBRACE", "MEMORY", "DOT", "COMMA", "BINEQUAL", "BINNOTEQUAL", "BINLSS", "BINGTR", "BINLSSEQUAL", "BINGTREQUAL", "PLUS", "MINUS", 'MOD', "MUL", "DIV", "INT", "IDENTIFIER", "COLON", "SEMICOLON", "RIGHT_ARROW", "LET", "STORE8", "EQUALS", "COMMENT"])
 
 
 @pg.production("modules : modules module")
@@ -46,6 +46,7 @@ def empty_func_body(p):
 def body_block(p):
     return Block([p[1]])
 
+
 @pg.production("innerfunc : innerfunc stmt")
 def statements(p):
     return Block(p[0].getastlist() + [p[1]])
@@ -56,24 +57,29 @@ def single_statement_inner_func(p):
 
 @pg.production("stmt : vardeclar")
 @pg.production("stmt : memstore")
-@pg.production("stmt : sum")
+@pg.production("stmt : returnstmt")
 @pg.production("stmt : comment")
 @pg.production("stmt : forloop")
+@pg.production("stmt : functioncall SEMICOLON")
 @pg.production("stmt : if")
 def innerfunc_values(p):
     return p[0]
+
+@pg.production("returnstmt : RETURN sum SEMICOLON")
+def func_return_value(p):
+    return ReturnValue(p[1])
 
 @pg.production("forloop : FOR IDENTIFIER IN RANGE LPAR sum COMMA sum RPAR body")
 def forloop(p):
     return ForLoop(p[1], p[5], p[7], p[9])
 
-@pg.production("if : IF sum body")
+@pg.production("if : IF LPAR sum RPAR body")
 def if_stmt(p):
-    return IfStmt(p[1], p[2], Block([]))
+    return IfStmt(p[2], p[4], Block([]))
 
-@pg.production("if : IF sum body ELSE body")
+@pg.production("if : IF LPAR sum RPAR body ELSE body")
 def if_stmt(p):
-    return IfStmt(p[1], p[2], p[4])
+    return IfStmt(p[2], p[4], p[6])
 
 @pg.production("comment : COMMENT")
 def commentary(p):
@@ -103,26 +109,26 @@ def load8(p):
     return Memory_Load(p[2])
 
 # atom
-@pg.production("atom : IDENTIFIER LPAR arguments RPAR SEMICOLON") # FIXME this expects an ';' at the end of the call. When used in an expression I think this is not wanted behaviour. SOLUTION: remove the semicolon reference
+@pg.production("atom : functioncall")
+def atom_function_call(p):
+    return FunctionCall(p[0].getstr(), p[2])
+
+# functioncall
+@pg.production("functioncall : IDENTIFIER LPAR arguments RPAR")
 def function_call(p):
     return FunctionCall(p[0].getstr(), p[2])
 
-# atom
-@pg.production("atom : IDENTIFIER LPAR RPAR SEMICOLON")
+@pg.production("functioncall : IDENTIFIER LPAR RPAR")
 def function_call_no_arguments(p):
     return FunctionCall(p[0].getstr(), Arguments([]))
 
-@pg.production("arguments : arguments COMMA arg")
+@pg.production("arguments : arguments COMMA sum")
 def arguments(p):
     return Arguments(p[0].getastlist() + [Arg(p[2])])
 
-@pg.production("arguments : arg")
+@pg.production("arguments : sum")
 def arguments_one(p):
     return Arguments([Arg(p[0])])
-
-@pg.production("arg : sum")
-def arg(p):
-    return p[0]
 
 # atom
 @pg.production("atom : LPAR sum RPAR")

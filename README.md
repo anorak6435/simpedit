@@ -83,6 +83,26 @@ else { block }
     - [x] >
     - [x] <=
     - [x] >=
-- [ ] Memory
+- [x] Memory
     - [x] store8\[address\] = value;
-    - [ ] load8\[address\]
+    - [x] load8\[address\]
+- [ ] Generate the productions that are needed for the program
+    - [ ] modules
+        - [ ] comment
+        - [ ] import
+        - [ ] export
+        - [ ] memory
+        - [ ] function
+    - [ ] statements
+        - [ ] assert (for testing purposes)
+        - [ ] comment
+        - [ ] vardeclar
+        - [ ] memstore
+        - [ ] sum (expression)
+        - [ ] forloop
+        - [ ] if
+
+# Pygraphviz installation
+https://stackoverflow.com/questions/59707234/issues-installing-pygrahviz-fatal-error-c1083-cannot-open-include-file-graph
+run the .exe after that  
+pip install --global-option=build_ext --global-option="-IC:\Program Files\Graphviz\include" --global-option="-LC:\Program Files\Graphviz\lib" pygraphviz

@@ -75,7 +75,7 @@
 (call $setpixel (i32.add (local.get $cursor_x) (i32.const 7)) (local.get $pixel_row) (i32.const 0) (i32.const 0) (i32.const 0) (i32.const 0))
 ))
 )
-(func $char_cli (param $char i32) (param $column i32) (param $row i32) (local $char_start i32) (local $char_line i32) (local $screen_end i32) (local $scanline i32)
+(func $char_cli (param $char i32) (param $column i32) (param $row i32) (local $scanline i32) (local $char_start i32) (local $char_line i32) (local $screen_end i32)
 ;; writes a character to the screen on cursor column / cursor row
 ;; found the A character.
 (local.set $screen_end
@@ -1112,7 +1112,7 @@
 (block $break_font_program_1
 (loop $top_font_program_1
 (br_if $break_font_program_1 (i32.eq (local.get $ch_index) (i32.const 85)))
-(call $log (i32.rem_u (i32.add (local.get $ch_index) (i32.const 65)) (i32.const 10)))
+;; log((ch_index + 65) % 10);
 (call $char_cli (i32.add (i32.rem_u (i32.add (local.get $ch_line) (local.get $ch_index)) (i32.const 26)) (i32.const 65)) (local.get $ch_index) (i32.mul (local.get $ch_line) (i32.const 11)))
 (local.set $ch_index
 (i32.add (local.get $ch_index) (i32.const 1))
@@ -1126,58 +1126,6 @@
 (br $top_font_program_0)
 )
 )
-;; A
-;; char_cli(65, 0, 0);
-;; B
-;; char_cli(66, 1, 0);
-;; C
-;; char_cli(67, 2, 0);
-;; D
-;; char_cli(68, 3, 0);
-;; E
-;; char_cli(69, 4, 0);
-;; F
-;; char_cli(70, 5, 0);
-;; G
-;; char_cli(71, 6, 0);
-;; H
-;; char_cli(72, 7, 0);
-;; I
-;; char_cli(73, 8, 0);
-;; J
-;; char_cli(74, 9, 0);
-;; K
-;; char_cli(75, 10, 0);
-;; L
-;; char_cli(76, 11, 0);
-;; M
-;; char_cli(77, 12, 0);
-;; N
-;; char_cli(78, 13, 0);
-;; O
-;; char_cli(79, 14, 0);
-;; P
-;; char_cli(80, 15, 0);
-;; Q
-;; char_cli(81, 16, 0);
-;; R
-;; char_cli(82, 17, 0);
-;; S
-;; char_cli(83, 18, 0);
-;; T
-;; char_cli(84, 19, 0);
-;; U
-;; char_cli(85, 20, 0);
-;; V
-;; char_cli(86, 21, 0);
-;; W
-;; char_cli(87, 22, 0);
-;; X
-;; char_cli(88, 23, 0);
-;; Y
-;; char_cli(89, 24, 0);
-;; Z
-;; char_cli(90, 25, 0);
 )
 (func $condition_check (local $test i32)
 (local.set $test
@@ -1262,7 +1210,7 @@
 (call $log (i32.const 6666))
 ))
 )
-(func $main (export "main") (result i32) (local $yi i32) (local $xi i32)
+(func $main (export "main") (result i32) (local $xi i32) (local $yi i32)
 (call $add (i32.const 410) (i32.const 10))
 (call $log)
 ;; logs the result of the add function that was put on the stack of the main function.
@@ -1296,14 +1244,6 @@
 )
 )
 (call $condition_check)
-;; total memory in the 18 pages
-(call $log (i32.mul (i32.const 65536) (i32.const 18)))
-;; total memory used by this screen
-(call $log (i32.mul (i32.mul (i32.const 680) (i32.const 420)) (i32.const 4)))
-;; memory left after screen.
-(call $log (i32.sub (i32.mul (i32.const 65536) (i32.const 18)) (i32.mul (i32.mul (i32.const 680) (i32.const 420)) (i32.const 4))))
-;; the font memory
-(call $log (i32.mul (i32.mul (i32.const 94) (i32.const 8)) (i32.const 11)))
 (call $font_program)
 (call $refresh_screen)
 ;; set the return value 0 from the function

@@ -195,7 +195,9 @@ def iter_body_stmts_for_let_stmts(body_stmts):
             stmts.extend(iter_body_stmts_for_let_stmts(val.body.statements[0].statements)) # get possible let statements from the loop body
             # assert False, (dir(val.body.statements[0]), val.body.statements[0].statements)
         elif isinstance(val, IfStmt):
-            print(dir(val))
+            # print(dir(val))
+            # FIXME : TRY TO GET THIS FIXED
+            # assert False, val.true_block
             stmts.extend(iter_body_stmts_for_let_stmts(val.true_block.statements[0].statements)) # there is always a true statements
             if len(val.false_block.statements) > 0:
                 stmts.extend(iter_body_stmts_for_let_stmts(val.false_block.statements[0].statements))
@@ -252,11 +254,21 @@ class Value(BaseBox):
             case _:
                 raise Exception(f"No watcode found for value: {self.value.gettokentype()}")
 
+class ReturnValue(BaseBox):
+    def __init__(self, val):
+        self.value = val
+
+    def eval(self) -> str:
+        return self.value.eval()
+
 class BinaryOp(BaseBox):
     def __init__(self, left, op, right):
         self.left = left
         self.op = op
         self.right = right
+
+    def __repr__(self) -> str:
+        return f"({self.op}, (left {self.left}) (right {self.right})"
 
     def eval(self) -> str:
         match self.op.getstr():
