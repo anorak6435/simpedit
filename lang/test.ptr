@@ -1,0 +1,81 @@
+import env.log as lambda log (i32)
+import env.refresh_screen as lambda refresh_screen ()
+export memory wasmem 18 as wasmem
+export def add (x : i32, y : i32) -> i32 {
+    return x + y;
+} as add
+
+def condition_check() -> void {
+    let test = 1;
+    if (test == 1) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (test != 0) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (test != 1) {
+        log(6666);
+    } else {
+        log(1111);
+    }
+
+    if (test < 2) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (2 < test) {
+        log(6666);
+    } else {
+        log(1111);
+    }
+    if (2 > test) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (test > 2) {
+        log(6666);
+    } else {
+        log(1111);
+    }
+
+    if (test <= 2) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (2 <= test) {
+        log(6666);
+    } else {
+        log(1111);
+    }
+    if (2 >= test) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (test >= 2) {
+        log(6666);
+    } else {
+        log(1111);
+    }
+    if (test && 1) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+    if (1 && test) {
+        log(1111);
+    } else {
+        log(6666);
+    }
+}
+
+export def main() -> i32 {
+    
+} as main

@@ -64,7 +64,7 @@ def print_char_scanline(bitmap : i32, cursor_x : i32, pixel_row : i32) -> void {
 def char_cli(char : i32, column : i32, row : i32) -> void {
     # writes a character to the screen on cursor column / cursor row
     # found the A character.
-    let screen_end = 680 * 420 * 4;
+    let screen_end = 680 * 420 * 4; # the end of the screen in memory
     let char_start = screen_end + (char-32)*11;
     for scanline in range(0, 11) {
         let char_line = char_start + scanline;
@@ -441,6 +441,20 @@ def load_font() -> void {
     store8[char_start+9] = 0;
     store8[char_start+10] = 0;
     # End of 'Z' Character
+    # Start of '0' Character
+    let char_start = char_start + 11;
+    store8[char_start] = 124;
+    store8[char_start+1] = 254;
+    store8[char_start+2] = 206;
+    store8[char_start+3] = 222;
+    store8[char_start+4] = 214;
+    store8[char_start+5] = 246;
+    store8[char_start+6] = 230;
+    store8[char_start+7] = 254;
+    store8[char_start+8] = 124;
+    store8[char_start+9] = 0;
+    store8[char_start+10] = 0;
+    # End of '0' Character
 }
 
 def font_program() -> void {
@@ -448,7 +462,7 @@ def font_program() -> void {
     for ch_line in range(0, 38) {
         for ch_index in range(0, 85) {
             # log((ch_index + 65) % 10);
-            char_cli((ch_line + ch_index) % 26 + 65, ch_index, ch_line * 11);
+            char_cli((ch_line + ch_index) % 27 + 65, ch_index, ch_line * 11);
         }
     }
 }

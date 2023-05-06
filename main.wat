@@ -75,12 +75,13 @@
 (call $setpixel (i32.add (local.get $cursor_x) (i32.const 7)) (local.get $pixel_row) (i32.const 0) (i32.const 0) (i32.const 0) (i32.const 0))
 ))
 )
-(func $char_cli (param $char i32) (param $column i32) (param $row i32) (local $scanline i32) (local $char_start i32) (local $char_line i32) (local $screen_end i32)
+(func $char_cli (param $char i32) (param $column i32) (param $row i32) (local $char_start i32) (local $scanline i32) (local $screen_end i32) (local $char_line i32)
 ;; writes a character to the screen on cursor column / cursor row
 ;; found the A character.
 (local.set $screen_end
 (i32.mul (i32.mul (i32.const 680) (i32.const 420)) (i32.const 4))
 )
+;; the end of the screen in memory
 (local.set $char_start
 (i32.add (local.get $screen_end) (i32.mul (i32.sub (local.get $char) (i32.const 32)) (i32.const 11)))
 )
@@ -1097,6 +1098,44 @@
 (i32.const 0)
 (i32.store8)
 ;; End of 'Z' Character
+;; Start of '0' Character
+(local.set $char_start
+(i32.add (local.get $char_start) (i32.const 11))
+)
+(local.get $char_start)
+(i32.const 124)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 1))
+(i32.const 254)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 2))
+(i32.const 206)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 3))
+(i32.const 222)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 4))
+(i32.const 214)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 5))
+(i32.const 246)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 6))
+(i32.const 230)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 7))
+(i32.const 254)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 8))
+(i32.const 124)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 9))
+(i32.const 0)
+(i32.store8)
+(i32.add (local.get $char_start) (i32.const 10))
+(i32.const 0)
+(i32.store8)
+;; End of '0' Character
 )
 (func $font_program (local $ch_line i32) (local $ch_index i32)
 (call $load_font)
@@ -1113,7 +1152,7 @@
 (loop $top_font_program_1
 (br_if $break_font_program_1 (i32.eq (local.get $ch_index) (i32.const 85)))
 ;; log((ch_index + 65) % 10);
-(call $char_cli (i32.add (i32.rem_u (i32.add (local.get $ch_line) (local.get $ch_index)) (i32.const 26)) (i32.const 65)) (local.get $ch_index) (i32.mul (local.get $ch_line) (i32.const 11)))
+(call $char_cli (i32.add (i32.rem_u (i32.add (local.get $ch_line) (local.get $ch_index)) (i32.const 27)) (i32.const 65)) (local.get $ch_index) (i32.mul (local.get $ch_line) (i32.const 11)))
 (local.set $ch_index
 (i32.add (local.get $ch_index) (i32.const 1))
 )
